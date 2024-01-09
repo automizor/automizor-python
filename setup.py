@@ -21,7 +21,6 @@ setup(
         "Programming Language :: Python :: 3.12",
     ],
     keywords="automizor framework",
-    install_requires=["dotmap"],
     packages=find_packages(include=["automizor", "automizor.*"]),
     include_package_data=True,
 )
