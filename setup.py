@@ -7,9 +7,9 @@ setup(
     name="automizor",
     version=version,
     description="Python Automizor framework",
-    url="https://github.com/vcodx/automizor",
+    url="https://github.com/automizor/automizor",
     author="Christian Fischer",
-    author_email="christian@vcodx.com",
+    author_email="christian@automizor.io",
     license="Apache License",
     classifiers=[
         "Intended Audience :: Developers",
