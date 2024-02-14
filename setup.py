@@ -23,4 +23,7 @@ setup(
     keywords="automizor framework",
     packages=find_packages(include=["automizor", "automizor.*"]),
     include_package_data=True,
+    install_requires=[
+        "requests",
+    ],
 )
