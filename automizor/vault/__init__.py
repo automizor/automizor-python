@@ -1,7 +1,7 @@
 from functools import lru_cache
 
+from ._container import SecretContainer
 from ._exceptions import AutomizorVaultError
-from ._secret import Secret
 
 
 @lru_cache
@@ -11,7 +11,7 @@ def _get_vault():
     return Vault()
 
 
-def get_secret(name: str) -> Secret:
+def get_secret(name: str) -> SecretContainer:
     """
     Retrieves a secret by its name. Fetches from a local file or queries the
     `Automizor API`, based on configuration.
@@ -30,7 +30,7 @@ def get_secret(name: str) -> Secret:
     return vault.get_secret(name)
 
 
-def set_secret(secret: Secret) -> Secret:
+def set_secret(secret: SecretContainer) -> SecretContainer:
     """
     Updates an existing secret. Updates to a local file or to the
     `Automizor API`, based on configuration.
@@ -51,7 +51,7 @@ def set_secret(secret: Secret) -> Secret:
 
 __all__ = [
     "AutomizorVaultError",
-    "Secret",
+    "SecretContainer",
     "get_secret",
     "set_secret",
 ]

@@ -4,8 +4,8 @@ from dataclasses import asdict
 
 import requests
 
+from ._container import SecretContainer
 from ._exceptions import AutomizorVaultError
-from ._secret import Secret
 
 
 class Vault:
@@ -67,7 +67,7 @@ class Vault:
             }
         )
 
-    def get_secret(self, name) -> Secret:
+    def get_secret(self, name) -> SecretContainer:
         """
         Retrieves a secret by its name. Fetches from a local file or queries the
         `Automizor API`, based on configuration.
@@ -86,7 +86,7 @@ class Vault:
             return self._read_file_secret(name)
         return self._read_vault_secret(name)
 
-    def set_secret(self, secret: Secret) -> Secret:
+    def set_secret(self, secret: SecretContainer) -> SecretContainer:
         """
         Updates an existing secret. Updates to a local file or to the
         `Automizor API`, based on configuration.
@@ -105,22 +105,22 @@ class Vault:
             return self._write_file_secret(secret)
         return self._write_vault_secret(secret)
 
-    def _read_file_secret(self, name: str) -> Secret:
+    def _read_file_secret(self, name: str) -> SecretContainer:
         with open(self._secret_file, "r", encoding="utf-8") as file:
             secrets = json.load(file)
             value = secrets.get(name, {})
-        return Secret(name=name, value=value)
+        return SecretContainer(name=name, value=value)
 
-    def _read_vault_secret(self, name: str) -> Secret:
+    def _read_vault_secret(self, name: str) -> SecretContainer:
         url = f"https://{self._api_host}/api/v1/vault/secret/{name}/"
         try:
             response = self.session.get(url, timeout=10)
             response.raise_for_status()
-            return Secret(**response.json())
+            return SecretContainer(**response.json())
         except Exception as exc:
             raise AutomizorVaultError(f"Failed to get secret: {exc}") from exc
 
-    def _write_file_secret(self, secret: Secret):
+    def _write_file_secret(self, secret: SecretContainer):
         with open(self._secret_file, "r+", encoding="utf-8") as file:
             secrets = json.load(file)
             secrets[secret.name] = secret.value
@@ -129,11 +129,11 @@ class Vault:
             file.truncate()
         return secret
 
-    def _write_vault_secret(self, secret: Secret) -> Secret:
+    def _write_vault_secret(self, secret: SecretContainer) -> SecretContainer:
         url = f"https://{self._api_host}/api/v1/vault/secret/{secret.name}/"
         try:
             response = self.session.put(url, timeout=10, json=asdict(secret))
             response.raise_for_status()
-            return Secret(**response.json())
+            return SecretContainer(**response.json())
         except Exception as exc:
             raise AutomizorVaultError(f"Failed to set secret: {exc}") from exc
