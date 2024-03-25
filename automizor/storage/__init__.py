@@ -1,6 +1,9 @@
+import json
+import mimetypes
 from functools import lru_cache
+from pathlib import Path
 
-from ._exceptions import AutomizorStorageError
+from ._exceptions import AssetNotFoundError, AutomizorStorageError
 from ._storage import JSON
 
 
@@ -9,6 +12,30 @@ def _get_storage():
     from ._storage import Storage
 
     return Storage()
+
+
+def list_assets() -> list[str]:
+    """
+    Retrieves a list of all asset names.
+
+    Returns:
+        A list of all asset names.
+    """
+
+    storage = _get_storage()
+    return storage.list_assets()
+
+
+def delete_asset(name: str) -> None:
+    """
+    Deletes the specified asset.
+
+    Parameters:
+        name: The name identifier of the asset to delete.
+    """
+
+    storage = _get_storage()
+    storage.delete_asset(name)
 
 
 def get_bytes(name: str) -> bytes:
@@ -72,10 +99,84 @@ def get_text(name: str) -> str:
     return storage.get_text(name)
 
 
+def set_bytes(name: str, data: bytes, content_type="application/octet-stream") -> None:
+    """
+    Uploads raw bytes as an asset.
+
+    Parameters:
+        name: The name identifier of the asset to upload.
+        data: The raw byte content to upload.
+        content_type: The MIME type of the asset.
+    """
+
+    storage = _get_storage()
+    storage.set_bytes(name, data, content_type)
+
+
+def set_file(name: str, path: str, content_type: str = None) -> None:
+    """
+    Uploads a file as an asset.
+
+    Parameters:
+        name: The name identifier of the asset to upload.
+        path: The filesystem path of the file to upload.
+        content_type: The MIME type of the asset.
+    """
+
+    content = Path(path).read_bytes()
+    if content_type is None:
+        content_type, _ = mimetypes.guess_type(path)
+        if content_type is None:
+            content_type = "application/octet-stream"
+
+    storage = _get_storage()
+    storage.set_bytes(name, content, content_type)
+
+
+def set_json(name: str, value: JSON, **kwargs) -> None:
+    """
+    Uploads JSON data as an asset.
+
+    Parameters:
+        name: The name identifier of the asset to upload.
+        value: The JSON data to upload.
+        kwargs: Additional keyword arguments to pass to json.dumps.
+    """
+
+    content = json.dumps(value, **kwargs).encode("utf-8")
+    content_type = "application/json"
+
+    storage = _get_storage()
+    storage.set_bytes(name, content, content_type)
+
+
+def set_text(name: str, text: str) -> None:
+    """
+    Uploads text content as an asset.
+
+    Parameters:
+        name: The name identifier of the asset to upload.
+        text: The text content to upload.
+    """
+
+    content = text.encode("utf-8")
+    content_type = "text/plain"
+
+    storage = _get_storage()
+    storage.set_bytes(name, content, content_type)
+
+
 __all__ = [
+    "AssetNotFoundError",
     "AutomizorStorageError",
+    "list_assets",
+    "delete_asset",
     "get_bytes",
     "get_file",
     "get_json",
     "get_text",
+    "set_bytes",
+    "set_file",
+    "set_json",
+    "set_text",
 ]

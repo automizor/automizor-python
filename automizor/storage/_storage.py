@@ -3,7 +3,7 @@ from typing import Dict, List, Union
 
 import requests
 
-from ._exceptions import AutomizorStorageError
+from ._exceptions import AssetNotFoundError, AutomizorStorageError
 
 JSON = Union[str, int, float, bool, None, Dict[str, "JSON"], List["JSON"]]
 
@@ -53,9 +53,57 @@ class Storage:
         self.session.headers.update(
             {
                 "Authorization": f"Token {self._api_token}",
-                "Content-Type": "application/json",
             }
         )
+
+    def list_assets(self) -> List[str]:
+        """
+        Retrieves a list of all asset names.
+
+        This function fetches the names of all assets stored in the storage service,
+        providing a convenient way to list and identify the available assets.
+
+        Returns:
+            A list of all asset names.
+        """
+        url = f"https://{self._api_host}/api/v1/storage/asset/"
+        asset_names = []
+
+        try:
+            while url:
+                response = self.session.get(url, timeout=10)
+                response.raise_for_status()
+                data = response.json()
+
+                for asset in data["results"]:
+                    asset_names.append(asset["name"])
+                url = data["next"]
+        except Exception as exc:
+            raise AutomizorStorageError(f"Failed to list assets: {exc}") from exc
+        return asset_names
+
+    def delete_asset(self, name: str) -> None:
+        """
+        Deletes the specified asset.
+
+        This function deletes the asset identified by `name` from the storage service.
+        It is useful for removing assets that are no longer needed or should be cleaned
+        up to free up storage space.
+
+        Parameters:
+            name: The name identifier of the asset to delete.
+        """
+
+        url = f"https://{self._api_host}/api/v1/storage/asset/{name}/"
+        try:
+            response = self.session.delete(url, timeout=10)
+            response.raise_for_status()
+        except requests.HTTPError as exc:
+            if exc.response.status_code == 404:
+                raise AssetNotFoundError(f"Asset '{name}' not found") from exc
+            raise AutomizorStorageError(f"Failed to delete asset: {exc}") from exc
+        except Exception as exc:
+            raise AutomizorStorageError(f"Failed to delete asset: {exc}") from exc
 
     def get_bytes(self, name: str) -> bytes:
         """
@@ -134,6 +182,51 @@ class Storage:
         url = self._get_asset_url(name)
         return self._download_file(url, mode="text")
 
+    def set_bytes(self, name: str, content: bytes, content_type: str) -> None:
+        """
+        Uploads the specified content as a new asset.
+
+        This function uploads the provided `content` as a new asset with the specified
+        `name`. It is useful for creating new assets or updating existing ones with
+        fresh content.
+
+        Parameters:
+            name: The name identifier of the asset to create.
+            content: The raw byte content of the asset.
+            content_type: The MIME type of the asset content.
+        """
+
+        if not self._has_asset(name):
+            self._create_asset(name, content, content_type)
+        else:
+            self._update_asset(name, content, content_type)
+
+    def _create_asset(self, name: str, content: bytes, content_type: str) -> None:
+        """
+        Creates a new asset with the specified content.
+
+        This function creates a new asset with the specified `name` and `content` in the
+        storage service. It is useful for uploading new assets or updating existing ones
+        with fresh content.
+
+        Parameters:
+            name: The name identifier of the asset to create.
+            content: The raw byte content of the asset.
+            content_type: The MIME type of the asset content.
+        """
+
+        url = f"https://{self._api_host}/api/v1/storage/asset/"
+        try:
+            data = {
+                "content_type": content_type,
+                "name": name,
+            }
+            files = {"file": ("text.txt", content, content_type)}
+            response = self.session.post(url, files=files, data=data, timeout=10)
+            response.raise_for_status()
+        except Exception as exc:
+            raise AutomizorStorageError(f"Failed to create asset: {exc}") from exc
+
     def _download_file(self, url: str, mode: str = "content"):
         try:
             session = requests.Session()
@@ -163,3 +256,41 @@ class Storage:
             raise RuntimeError("Url not found")
         except Exception as exc:
             raise AutomizorStorageError(f"Failed to get asset url: {exc}") from exc
+
+    def _has_asset(self, name: str) -> bool:
+        url = f"https://{self._api_host}/api/v1/storage/asset/{name}/"
+        try:
+            response = self.session.get(url, timeout=10)
+            return response.status_code == 200
+        except requests.HTTPError as exc:
+            if exc.response.status_code == 404:
+                return False
+            raise AutomizorStorageError(f"Failed to get asset: {exc}") from exc
+        except Exception as exc:
+            raise AutomizorStorageError(f"Failed to get asset: {exc}") from exc
+
+    def _update_asset(self, name: str, content: bytes, content_type: str) -> None:
+        """
+        Updates the specified asset with new content.
+
+        This function updates the asset identified by `name` with fresh content
+        provided as `content`. It is useful for modifying existing assets without
+        creating a new asset, ensuring that the asset's content is up-to-date.
+
+        Parameters:
+            name: The name identifier of the asset to update.
+            content: The raw byte content of the asset.
+            content_type: The MIME type of the asset content.
+        """
+
+        url = f"https://{self._api_host}/api/v1/storage/asset/{name}/"
+        try:
+            data = {
+                "content_type": content_type,
+                "name": name,
+            }
+            files = {"file": ("text.txt", content, content_type)}
+            response = self.session.put(url, files=files, data=data, timeout=10)
+            response.raise_for_status()
+        except Exception as exc:
+            raise AutomizorStorageError(f"Failed to update asset: {exc}") from exc
