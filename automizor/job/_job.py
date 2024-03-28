@@ -131,4 +131,8 @@ class Job:
             response.raise_for_status()
             return response.json().get("context", {})
         except Exception as exc:
-            raise AutomizorJobError(f"Failed to get job context: {exc}") from exc
+            try:
+                msg = exc.response.json()
+            except (AttributeError, ValueError):
+                msg = str(exc)
+            raise AutomizorJobError(f"Failed to get job context: {msg}") from exc

@@ -225,7 +225,11 @@ class Storage:
             response = self.session.post(url, files=files, data=data, timeout=10)
             response.raise_for_status()
         except Exception as exc:
-            raise AutomizorStorageError(f"Failed to create asset: {exc}") from exc
+            try:
+                msg = exc.response.json()
+            except (AttributeError, ValueError):
+                msg = str(exc)
+            raise AutomizorStorageError(f"Failed to create asset: {msg}") from exc
 
     def _download_file(self, url: str, mode: str = "content"):
         try:
@@ -255,7 +259,11 @@ class Storage:
                 return url
             raise RuntimeError("Url not found")
         except Exception as exc:
-            raise AutomizorStorageError(f"Failed to get asset url: {exc}") from exc
+            try:
+                msg = exc.response.json()
+            except (AttributeError, ValueError):
+                msg = str(exc)
+            raise AutomizorStorageError(f"Failed to get asset url: {msg}") from exc
 
     def _has_asset(self, name: str) -> bool:
         url = f"https://{self._api_host}/api/v1/storage/asset/{name}/"
@@ -265,9 +273,17 @@ class Storage:
         except requests.HTTPError as exc:
             if exc.response.status_code == 404:
                 return False
-            raise AutomizorStorageError(f"Failed to get asset: {exc}") from exc
+            try:
+                msg = exc.response.json()
+            except (AttributeError, ValueError):
+                msg = str(exc)
+            raise AutomizorStorageError(f"Failed to get asset: {msg}") from exc
         except Exception as exc:
-            raise AutomizorStorageError(f"Failed to get asset: {exc}") from exc
+            try:
+                msg = exc.response.json()
+            except (AttributeError, ValueError):
+                msg = str(exc)
+            raise AutomizorStorageError(f"Failed to get asset: {msg}") from exc
 
     def _update_asset(self, name: str, content: bytes, content_type: str) -> None:
         """
@@ -293,4 +309,8 @@ class Storage:
             response = self.session.put(url, files=files, data=data, timeout=10)
             response.raise_for_status()
         except Exception as exc:
-            raise AutomizorStorageError(f"Failed to update asset: {exc}") from exc
+            try:
+                msg = exc.response.json()
+            except (AttributeError, ValueError):
+                msg = str(exc)
+            raise AutomizorStorageError(f"Failed to update asset: {msg}") from exc
