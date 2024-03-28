@@ -1,4 +1,5 @@
 from dataclasses import dataclass, fields
+from typing import Any, Dict
 
 
 def ignore_extra_fields(cls):
@@ -29,7 +30,7 @@ class SecretContainer:
     """
 
     name: str
-    value: dict
+    value: Dict[str, Any]
     description: str = ""
 
     def get(self, key, default=None):
@@ -44,7 +45,7 @@ class SecretContainer:
         """Secret.keys() -> a set-like object providing a view on secret's keys."""
         return self.value.keys()
 
-    def update(self, pairs: dict) -> None:
+    def update(self, pairs: Dict[str, Any]) -> None:
         """Update the secret's dictionary with the key-value pairs from pairs."""
         self.value.update(pairs)
 

@@ -1,4 +1,5 @@
 from functools import lru_cache
+from typing import Any, Dict
 
 from ._container import SecretContainer
 from ._exceptions import AutomizorVaultError
@@ -11,7 +12,11 @@ def _get_vault():
     return Vault()
 
 
-def create_secret(name: str, value: str, description: str = "") -> SecretContainer:
+def create_secret(
+    name: str,
+    value: Dict[str, Any],
+    description: str = "",
+) -> SecretContainer:
     """
     Creates a new secret. Stores to a local file or to the `Automizor API`,
     based on configuration. If the secret already exists, it will be updated.
@@ -20,10 +25,10 @@ def create_secret(name: str, value: str, description: str = "") -> SecretContain
         name: The name of the secret.
         value: The value of the secret.
         description: The description of the secret.
-    
+
     Returns:
         The created secret.
-    
+
     Raises:
         AutomizorVaultError: If creating the secret fails.
     """
