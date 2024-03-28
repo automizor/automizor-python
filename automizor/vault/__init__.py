@@ -11,6 +11,33 @@ def _get_vault():
     return Vault()
 
 
+def create_secret(name: str, value: str, description: str = "") -> SecretContainer:
+    """
+    Creates a new secret. Stores to a local file or to the `Automizor API`,
+    based on configuration. If the secret already exists, it will be updated.
+
+    Args:
+        name: The name of the secret.
+        value: The value of the secret.
+        description: The description of the secret.
+    
+    Returns:
+        The created secret.
+    
+    Raises:
+        AutomizorVaultError: If creating the secret fails.
+    """
+
+    secret = SecretContainer(
+        name=name,
+        description=description,
+        value=value,
+    )
+
+    vault = _get_vault()
+    return vault.create_secret(secret)
+
+
 def get_secret(name: str) -> SecretContainer:
     """
     Retrieves a secret by its name. Fetches from a local file or queries the
@@ -52,6 +79,7 @@ def set_secret(secret: SecretContainer) -> SecretContainer:
 __all__ = [
     "AutomizorVaultError",
     "SecretContainer",
+    "create_secret",
     "get_secret",
     "set_secret",
 ]
