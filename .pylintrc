@@ -1,0 +1,8 @@
+[MASTER]
+disable=
+    logging-fstring-interpolation,
+    import-outside-toplevel,
+    invalid-name,
+    C0114, # missing-module-docstring
+    C0115, # missing-class-docstring
+    C0116 # missing-function-docstring
