@@ -1,27 +1,24 @@
-name: Upload Python Package
+name: Publish
 
 on:
-  release:
-    types: [created]
-  workflow_dispatch:
+  push:
+    tags:
+      - "v*"
+
+env:
+  PYTHON_VERSION: "3.12"
 
 jobs:
-  deploy:
+  publish-pypi:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Set up Python 3.12
+      - name: Set up python ${{ env.PYTHON_VERSION }}
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
-
-      - name: Add repository sub-modules
-        run: |
-          git submodule init
-          git submodule update
+          python-version: ${{ env.PYTHON_VERSION }}
 
       - name: Install dependencies
         run: |
