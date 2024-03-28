@@ -1,4 +1,4 @@
-name: Publish
+name: Build
 
 on:
   push:
@@ -10,6 +10,7 @@ env:
 
 jobs:
   publish-pypi:
+    name: Publish to PyPI
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -32,3 +33,8 @@ jobs:
         run: |
           python setup.py sdist bdist_wheel
           twine upload dist/*
+
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
