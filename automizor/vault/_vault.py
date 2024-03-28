@@ -4,6 +4,7 @@ from dataclasses import asdict
 
 import requests
 
+from automizor.utils import get_headers
 from ._container import SecretContainer
 from ._exceptions import AutomizorVaultError
 
@@ -60,12 +61,7 @@ class Vault:
         self._secret_file = os.getenv("AUTOMIZOR_SECRET_FILE")
 
         self.session = requests.Session()
-        self.session.headers.update(
-            {
-                "Authorization": f"Token {self._api_token}",
-                "Content-Type": "application/json",
-            }
-        )
+        self.session.headers.update(get_headers(self._api_token))
 
     def create_secret(self, secret: SecretContainer) -> SecretContainer:
         """

@@ -3,6 +3,7 @@ from typing import Dict, List, Union
 
 import requests
 
+from automizor.utils import get_headers
 from ._exceptions import AssetNotFoundError, AutomizorStorageError
 
 JSON = Union[str, int, float, bool, None, Dict[str, "JSON"], List["JSON"]]
@@ -50,11 +51,7 @@ class Storage:
         self._api_token = os.getenv("AUTOMIZOR_API_TOKEN")
 
         self.session = requests.Session()
-        self.session.headers.update(
-            {
-                "Authorization": f"Token {self._api_token}",
-            }
-        )
+        self.session.headers.update(get_headers(self._api_token))
 
     def list_assets(self) -> List[str]:
         """

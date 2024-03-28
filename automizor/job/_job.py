@@ -4,6 +4,7 @@ from typing import Dict, List, Union
 
 import requests
 
+from automizor.utils import get_headers
 from ._exceptions import AutomizorJobError
 
 JSON = Union[str, int, float, bool, None, Dict[str, "JSON"], List["JSON"]]
@@ -56,12 +57,7 @@ class Job:
         self._job_id = os.getenv("AUTOMIZOR_JOB_ID")
 
         self.session = requests.Session()
-        self.session.headers.update(
-            {
-                "Authorization": f"Token {self._api_token}",
-                "Content-Type": "application/json",
-            }
-        )
+        self.session.headers.update(get_headers(self._api_token))
 
     def get_context(self) -> dict:
         """
