@@ -18,8 +18,8 @@ def create_secret(
     description: str = "",
 ) -> SecretContainer:
     """
-    Creates a new secret. Stores to a local file or to the `Automizor API`,
-    based on configuration. If the secret already exists, it will be updated.
+    Creates a new secret. Stores the secret in the `Automizor API`.
+    If the secret already exists, it will be updated.
 
     Args:
         name: The name of the secret.
@@ -45,8 +45,7 @@ def create_secret(
 
 def get_secret(name: str) -> SecretContainer:
     """
-    Retrieves a secret by its name. Fetches from a local file or queries the
-    `Automizor API`, based on configuration.
+    Retrieves a secret by its name. Fetches from the `Automizor API`.
 
     Args:
         name: The name of the secret to retrieve.
@@ -64,8 +63,7 @@ def get_secret(name: str) -> SecretContainer:
 
 def set_secret(secret: SecretContainer) -> SecretContainer:
     """
-    Updates an existing secret. Updates to a local file or to the
-    `Automizor API`, based on configuration.
+    Updates an existing secret. Updates to the `Automizor API`.
 
     Args:
         secret: The secret to update.

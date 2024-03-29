@@ -33,17 +33,23 @@ class Storage:
 
         from automizor import storage
 
-        # To get bytes of an asset
-        bytes_data = storage.get_bytes("asset_name")
+        # To list all assets
+        asset_names = storage.list_assets()
 
-        # To save an asset to a file
-        file_path = storage.get_file("asset_name", "/path/to/save/file")
+        # To delete an asset
+        storage.delete_asset("AssetName")
 
-        # To retrieve an asset as JSON
-        json_data = storage.get_json("asset_name")
+        # Save an asset
+        storage.set_bytes("AssetName", b"Hello, World!")
+        storage.set_file("AssetName", "/path/to/file")
+        storage.set_json("AssetName", {"key": "value"})
+        storage.get_text("AssetName", "Hello, World!")
 
-        # To get the text content of an asset
-        text_data = storage.get_text("asset_name")
+        # Get an asset
+        bytes_data = storage.get_bytes("AssetName")
+        file_path = storage.get_file("AssetName", "/path/to/save/file")
+        json_data = storage.get_json("AssetName")
+        text_data = storage.get_text("AssetName")
     """
 
     def __init__(self):
