@@ -5,7 +5,7 @@ import requests
 
 from automizor.utils import get_headers
 from ._container import SecretContainer
-from ._exceptions import AutomizorVaultError
+from ._exceptions import AutomizorVaultError, SecretNotFoundError
 
 
 class Vault:
@@ -121,6 +121,10 @@ class Vault:
             response = self.session.get(url, timeout=10)
             response.raise_for_status()
             return SecretContainer(**response.json())
+        except requests.HTTPError as exc:
+            if exc.response.status_code == 404:
+                raise SecretNotFoundError(f"Secret '{name}' not found") from exc
+            raise AutomizorVaultError(f"Failed to get secret: {exc}") from exc
         except Exception as exc:
             try:
                 msg = exc.response.json()
@@ -134,6 +138,10 @@ class Vault:
             response = self.session.put(url, timeout=10, json=asdict(secret))
             response.raise_for_status()
             return SecretContainer(**response.json())
+        except requests.HTTPError as exc:
+            if exc.response.status_code == 404:
+                raise SecretNotFoundError(f"Secret '{secret.name}' not found") from exc
+            raise AutomizorVaultError(f"Failed to get secret: {exc}") from exc
         except Exception as exc:
             try:
                 msg = exc.response.json()

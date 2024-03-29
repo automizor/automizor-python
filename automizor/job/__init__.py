@@ -1,6 +1,6 @@
 from functools import lru_cache
 
-from ._exceptions import AutomizorJobError
+from ._exceptions import AutomizorJobError, ContextNotFoundError
 from ._job import JSON
 
 
@@ -45,6 +45,7 @@ def set_result(name: str, value: JSON):
 
 __all__ = [
     "AutomizorJobError",
+    "ContextNotFoundError",
     "get_context",
     "set_result",
 ]

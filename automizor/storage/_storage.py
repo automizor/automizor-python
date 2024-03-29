@@ -231,9 +231,10 @@ class Storage:
             raise AutomizorStorageError(f"Failed to create asset: {msg}") from exc
 
     def _download_file(self, name: str, mode: str = "content"):
+        url = self._get_asset_url(name)
+
         try:
-            asset_url = self._get_asset_url(name)
-            response = requests.Session().get(url=asset_url, timeout=10)
+            response = requests.Session().get(url=url, timeout=10)
             response.raise_for_status()
 
             match mode:
