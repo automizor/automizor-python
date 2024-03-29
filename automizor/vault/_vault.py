@@ -66,9 +66,9 @@ class Vault:
         """
 
         try:
-            return self._write_vault_secret(secret)
-        except AutomizorVaultError:
-            return self._create_vault_secret(secret)
+            return self._update_secret(secret)
+        except SecretNotFoundError:
+            return self._create_secret(secret)
 
     def get_secret(self, name) -> SecretContainer:
         """
@@ -84,7 +84,7 @@ class Vault:
             AutomizorVaultError: If retrieving the secret fails.
         """
 
-        return self._read_vault_secret(name)
+        return self._get_secret(name)
 
     def set_secret(self, secret: SecretContainer) -> SecretContainer:
         """
@@ -100,9 +100,9 @@ class Vault:
             AutomizorVaultError: If updating the secret fails.
         """
 
-        return self._write_vault_secret(secret)
+        return self._update_secret(secret)
 
-    def _create_vault_secret(self, secret: SecretContainer) -> SecretContainer:
+    def _create_secret(self, secret: SecretContainer) -> SecretContainer:
         url = f"https://{self._api_host}/api/v1/vault/secret/"
         try:
             response = self.session.post(url, timeout=10, json=asdict(secret))
@@ -115,7 +115,7 @@ class Vault:
                 msg = str(exc)
             raise AutomizorVaultError(f"Failed to create secret: {msg or exc}") from exc
 
-    def _read_vault_secret(self, name: str) -> SecretContainer:
+    def _get_secret(self, name: str) -> SecretContainer:
         url = f"https://{self._api_host}/api/v1/vault/secret/{name}/"
         try:
             response = self.session.get(url, timeout=10)
@@ -132,7 +132,7 @@ class Vault:
                 msg = str(exc)
             raise AutomizorVaultError(f"Failed to get secret: {msg}") from exc
 
-    def _write_vault_secret(self, secret: SecretContainer) -> SecretContainer:
+    def _update_secret(self, secret: SecretContainer) -> SecretContainer:
         url = f"https://{self._api_host}/api/v1/vault/secret/{secret.name}/"
         try:
             response = self.session.put(url, timeout=10, json=asdict(secret))

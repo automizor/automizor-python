@@ -195,10 +195,10 @@ class Storage:
             content_type: The MIME type of the asset content.
         """
 
-        if not self._has_asset(name):
-            self._create_asset(name, content, content_type)
-        else:
+        try:
             self._update_asset(name, content, content_type)
+        except AssetNotFoundError:
+            self._create_asset(name, content, content_type)
 
     def _create_asset(self, name: str, content: bytes, content_type: str) -> None:
         """
@@ -273,26 +273,6 @@ class Storage:
                 msg = str(exc)
             raise AutomizorStorageError(f"Failed to get asset url: {msg}") from exc
 
-    def _has_asset(self, name: str) -> bool:
-        url = f"https://{self._api_host}/api/v1/storage/asset/{name}/"
-        try:
-            response = self.session.get(url, timeout=10)
-            return response.status_code == 200
-        except requests.HTTPError as exc:
-            if exc.response.status_code == 404:
-                return False
-            try:
-                msg = exc.response.json()
-            except (AttributeError, ValueError):
-                msg = str(exc)
-            raise AutomizorStorageError(f"Failed to get asset: {msg}") from exc
-        except Exception as exc:
-            try:
-                msg = exc.response.json()
-            except (AttributeError, ValueError):
-                msg = str(exc)
-            raise AutomizorStorageError(f"Failed to get asset: {msg}") from exc
-
     def _update_asset(self, name: str, content: bytes, content_type: str) -> None:
         """
         Updates the specified asset with new content.
@@ -316,6 +296,10 @@ class Storage:
             files = {"file": ("text.txt", content, content_type)}
             response = self.session.put(url, files=files, data=data, timeout=10)
             response.raise_for_status()
+        except requests.HTTPError as exc:
+            if exc.response.status_code == 404:
+                raise AssetNotFoundError(f"Asset '{name}' not found") from exc
+            raise AutomizorStorageError(f"Failed to update asset: {exc}") from exc
         except Exception as exc:
             try:
                 msg = exc.response.json()
