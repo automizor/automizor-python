@@ -5,3 +5,7 @@ dist/
 *.egg-info
 *.pyc
 *~
+.venv
+.vscode
+.coverage
+pytest-report.xml

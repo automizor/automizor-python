@@ -1,6 +1,9 @@
-from setuptools import setup, find_packages
+from setuptools import find_packages, setup
 
 from automizor import version
+
+with open("requirements/app.txt") as f:
+    requirements = f.read().splitlines()
 
 
 setup(
@@ -23,7 +26,5 @@ setup(
     keywords="automizor framework",
     packages=find_packages(include=["automizor", "automizor.*"]),
     include_package_data=True,
-    install_requires=[
-        "requests",
-    ],
+    install_requires=requirements,
 )

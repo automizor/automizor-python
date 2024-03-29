@@ -1,6 +1,6 @@
 {
     "[python]": {
-        "editor.defaultFormatter": "ms-python.black-formatter"
+        "editor.defaultFormatter": "charliermarsh.ruff"
     },
     "editor.formatOnSave": true,
     "editor.codeActionsOnSave": {
@@ -12,4 +12,6 @@
         "**/htmlcov": true
     },
     "files.eol": "\n",
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true,
 }

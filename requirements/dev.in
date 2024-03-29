@@ -1,0 +1,4 @@
+-r app.txt # use resolved .txt file to avoid version drift
+
+pytest-cov
+-e .
