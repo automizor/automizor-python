@@ -23,8 +23,10 @@ pluggy==1.4.0
     # via pytest
 pytest==8.1.1
     # via
+    #   pytest-antilru
     #   pytest-cov
     #   pytest-mock
+pytest-antilru==1.1.1
 pytest-cov==5.0.0
 pytest-mock==3.14.0
 requests==2.31.0

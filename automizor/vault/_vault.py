@@ -4,6 +4,7 @@ from dataclasses import asdict
 import requests
 
 from automizor.utils import get_headers
+
 from ._container import SecretContainer
 from ._exceptions import AutomizorVaultError, SecretNotFoundError
 
@@ -119,6 +120,7 @@ class Vault:
         url = f"https://{self._api_host}/api/v1/vault/secret/{name}/"
         try:
             response = self.session.get(url, timeout=10)
+            print(self.session)
             response.raise_for_status()
             return SecretContainer(**response.json())
         except requests.HTTPError as exc:
