@@ -231,11 +231,9 @@ class Storage:
             raise AutomizorStorageError(f"Failed to create asset: {msg}") from exc
 
     def _download_file(self, name: str, mode: str = "content"):
-        url = self._get_asset_url(name)
-
         try:
-            session = requests.Session()
-            response = session.get(url=url, timeout=10)
+            asset_url = self._get_asset_url(name)
+            response = requests.Session().get(url=asset_url, timeout=10)
             response.raise_for_status()
 
             match mode:
@@ -249,7 +247,7 @@ class Storage:
         except requests.HTTPError as exc:
             if exc.response.status_code == 404:
                 raise AssetNotFoundError(f"Asset '{name}' not found") from exc
-            raise AutomizorStorageError(f"Failed to delete asset: {exc}") from exc
+            raise AutomizorStorageError(f"Failed to download asset: {exc}") from exc
         except Exception as exc:
             raise AutomizorStorageError(f"Failed to download asset: {exc}") from exc
 
@@ -263,6 +261,10 @@ class Storage:
             if url:
                 return url
             raise RuntimeError("Url not found")
+        except requests.HTTPError as exc:
+            if exc.response.status_code == 404:
+                raise AssetNotFoundError(f"Asset '{name}' not found") from exc
+            raise AutomizorStorageError(f"Failed to get asset url: {exc}") from exc
         except Exception as exc:
             try:
                 msg = exc.response.json()
