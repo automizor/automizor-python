@@ -105,9 +105,7 @@ class Vault:
     def _create_vault_secret(self, secret: SecretContainer) -> SecretContainer:
         url = f"https://{self._api_host}/api/v1/vault/secret/"
         try:
-            response = self.session.post(
-                url, timeout=10, json=asdict(secret), verify=False
-            )
+            response = self.session.post(url, timeout=10, json=asdict(secret))
             response.raise_for_status()
             return SecretContainer(**response.json())
         except Exception as exc:

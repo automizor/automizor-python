@@ -43,7 +43,7 @@ class Storage:
         storage.set_bytes("AssetName", b"Hello, World!")
         storage.set_file("AssetName", "/path/to/file")
         storage.set_json("AssetName", {"key": "value"})
-        storage.get_text("AssetName", "Hello, World!")
+        storage.set_text("AssetName", "Hello, World!")
 
         # Get an asset
         bytes_data = storage.get_bytes("AssetName")
@@ -123,8 +123,7 @@ class Storage:
             The raw byte content of the asset.
         """
 
-        url = self._get_asset_url(name)
-        return self._download_file(url, mode="content")
+        return self._download_file(name, mode="content")
 
     def get_file(self, name: str, path: str) -> str:
         """
@@ -143,8 +142,7 @@ class Storage:
             The path to the saved file, confirming the operation's success.
         """
 
-        url = self._get_asset_url(name)
-        content = self._download_file(url, mode="content")
+        content = self._download_file(name, mode="content")
         with open(path, "wb") as file:
             file.write(content)
         return path
@@ -164,8 +162,7 @@ class Storage:
             The parsed JSON data, which can be a dict, list, or primitive data type.
         """
 
-        url = self._get_asset_url(name)
-        return self._download_file(url, mode="json")
+        return self._download_file(name, mode="json")
 
     def get_text(self, name: str) -> str:
         """
@@ -182,8 +179,7 @@ class Storage:
             The content of the asset as a text string.
         """
 
-        url = self._get_asset_url(name)
-        return self._download_file(url, mode="text")
+        return self._download_file(name, mode="text")
 
     def set_bytes(self, name: str, content: bytes, content_type: str) -> None:
         """
@@ -234,10 +230,12 @@ class Storage:
                 msg = str(exc)
             raise AutomizorStorageError(f"Failed to create asset: {msg}") from exc
 
-    def _download_file(self, url: str, mode: str = "content"):
+    def _download_file(self, name: str, mode: str = "content"):
+        url = self._get_asset_url(name)
+
         try:
             session = requests.Session()
-            response = session.get(url, timeout=10)
+            response = session.get(url=url, timeout=10)
             response.raise_for_status()
 
             match mode:
@@ -248,6 +246,10 @@ class Storage:
                 case "text":
                     return response.text
             raise RuntimeError(f"Invalid mode {mode}")
+        except requests.HTTPError as exc:
+            if exc.response.status_code == 404:
+                raise AssetNotFoundError(f"Asset '{name}' not found") from exc
+            raise AutomizorStorageError(f"Failed to delete asset: {exc}") from exc
         except Exception as exc:
             raise AutomizorStorageError(f"Failed to download asset: {exc}") from exc
 
