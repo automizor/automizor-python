@@ -2,8 +2,11 @@ name: test automizor
 
 on: [push]
 
+env:
+  AUTOMIZOR_AGENT_TOKEN: token@host
+
 jobs:
-  build:
+  test:
     
     runs-on: ${{ matrix.os }}
     strategy:
@@ -23,5 +26,3 @@ jobs:
             pip install -r requirements/dev.txt
       - name: run tests
         run: python -m pytest
-        env:
-            AUTOMIZOR_AGENT_TOKEN: token@host
