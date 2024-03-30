@@ -1,5 +1,6 @@
 -r app.txt # use resolved .txt file to avoid version drift
 
+python-dotenv
 pytest-cov
 pytest-mock
 pytest-vcr

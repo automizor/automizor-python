@@ -10,3 +10,4 @@ dist/
 .coverage
 pytest-report.xml
 cov.xml
+.env
