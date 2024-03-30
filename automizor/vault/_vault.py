@@ -1,10 +1,9 @@
-import os
 from dataclasses import asdict
 
 import requests
 
 from automizor.exceptions import AutomizorError, NotFound
-from automizor.utils import get_headers
+from automizor.utils import get_api_config, get_headers
 
 from ._container import SecretContainer
 
@@ -21,8 +20,7 @@ class Vault:
     authentication purposes.
 
     Environment variables requisite for operation include:
-    - ``AUTOMIZOR_API_HOST``: The host URL for the `Automizor API`.
-    - ``AUTOMIZOR_API_TOKEN``: The token for authenticate against the `Automizor API`.
+    - ``AUTOMIZOR_AGENT_TOKEN``: The token for authenticating against the `Automizor API`.
 
     Example usage:
 
@@ -45,11 +43,9 @@ class Vault:
     """
 
     def __init__(self):
-        self._api_host = os.getenv("AUTOMIZOR_API_HOST")
-        self._api_token = os.getenv("AUTOMIZOR_API_TOKEN")
-
+        self.url, self.token = get_api_config()
         self.session = requests.Session()
-        self.session.headers.update(get_headers(self._api_token))
+        self.session.headers.update(get_headers(self.token))
 
     def create_secret(self, secret: SecretContainer) -> SecretContainer:
         """
@@ -104,7 +100,7 @@ class Vault:
         return self._update_secret(secret)
 
     def _create_secret(self, secret: SecretContainer) -> SecretContainer:
-        url = f"https://{self._api_host}/api/v1/vault/secret/"
+        url = f"https://{self.url}/api/v1/vault/secret/"
         try:
             response = self.session.post(url, timeout=10, json=asdict(secret))
             response.raise_for_status()
@@ -117,7 +113,7 @@ class Vault:
             raise AutomizorError("Failed to create secret") from exc
 
     def _get_secret(self, name: str) -> SecretContainer:
-        url = f"https://{self._api_host}/api/v1/vault/secret/{name}/"
+        url = f"https://{self.url}/api/v1/vault/secret/{name}/"
         try:
             response = self.session.get(url, timeout=10)
             response.raise_for_status()
@@ -130,7 +126,7 @@ class Vault:
             raise AutomizorError("Failed to get secret") from exc
 
     def _update_secret(self, secret: SecretContainer) -> SecretContainer:
-        url = f"https://{self._api_host}/api/v1/vault/secret/{secret.name}/"
+        url = f"https://{self.url}/api/v1/vault/secret/{secret.name}/"
         try:
             response = self.session.put(url, timeout=10, json=asdict(secret))
             response.raise_for_status()

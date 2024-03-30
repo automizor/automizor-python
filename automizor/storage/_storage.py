@@ -1,10 +1,9 @@
-import os
 from typing import Dict, List, Union
 
 import requests
 
 from automizor.exceptions import AutomizorError, NotFound
-from automizor.utils import get_headers
+from automizor.utils import get_api_config, get_headers
 
 JSON = Union[str, int, float, bool, None, Dict[str, "JSON"], List["JSON"]]
 
@@ -24,8 +23,7 @@ class Storage:
     To use this class effectively, ensure that the following environment variables are
     set in your environment:
 
-    - ``AUTOMIZOR_API_HOST``: Specifies the host URL of the `Automizor Storage API`.
-    - ``AUTOMIZOR_API_TOKEN``: Provides the token required for API authentication.
+    - ``AUTOMIZOR_AGENT_TOKEN``: The token for authenticating against the `Automizor API`.
 
     Example usage:
 
@@ -53,11 +51,9 @@ class Storage:
     """
 
     def __init__(self):
-        self._api_host = os.getenv("AUTOMIZOR_API_HOST")
-        self._api_token = os.getenv("AUTOMIZOR_API_TOKEN")
-
+        self.url, self.token = get_api_config()
         self.session = requests.Session()
-        self.session.headers.update(get_headers(self._api_token))
+        self.session.headers.update(get_headers(self.token))
 
     def list_assets(self) -> List[str]:
         """
@@ -69,7 +65,7 @@ class Storage:
         Returns:
             A list of all asset names.
         """
-        url = f"https://{self._api_host}/api/v1/storage/asset/"
+        url = f"https://{self.url}/api/v1/storage/asset/"
         asset_names = []
 
         try:
@@ -101,7 +97,7 @@ class Storage:
             name: The name identifier of the asset to delete.
         """
 
-        url = f"https://{self._api_host}/api/v1/storage/asset/{name}/"
+        url = f"https://{self.url}/api/v1/storage/asset/{name}/"
         try:
             response = self.session.delete(url, timeout=10)
             response.raise_for_status()
@@ -218,7 +214,7 @@ class Storage:
             content_type: The MIME type of the asset content.
         """
 
-        url = f"https://{self._api_host}/api/v1/storage/asset/"
+        url = f"https://{self.url}/api/v1/storage/asset/"
         try:
             data = {
                 "content_type": content_type,
@@ -238,7 +234,7 @@ class Storage:
         url = self._get_asset_url(name)
 
         try:
-            response = requests.Session().get(url=url, timeout=10)
+            response = requests.get(url=url, timeout=10)
             response.raise_for_status()
 
             match mode:
@@ -257,7 +253,7 @@ class Storage:
             raise AutomizorError("Failed to download asset") from exc
 
     def _get_asset_url(self, name: str) -> str:
-        url = f"https://{self._api_host}/api/v1/storage/asset/{name}/"
+        url = f"https://{self.url}/api/v1/storage/asset/{name}/"
         try:
             response = self.session.get(url, timeout=10)
             response.raise_for_status()
@@ -287,7 +283,7 @@ class Storage:
             content_type: The MIME type of the asset content.
         """
 
-        url = f"https://{self._api_host}/api/v1/storage/asset/{name}/"
+        url = f"https://{self.url}/api/v1/storage/asset/{name}/"
         try:
             data = {
                 "content_type": content_type,

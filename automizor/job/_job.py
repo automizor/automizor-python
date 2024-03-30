@@ -5,7 +5,7 @@ from typing import Dict, List, Union
 import requests
 
 from automizor.exceptions import AutomizorError
-from automizor.utils import get_headers
+from automizor.utils import get_api_config, get_headers
 
 JSON = Union[str, int, float, bool, None, Dict[str, "JSON"], List["JSON"]]
 
@@ -31,8 +31,7 @@ class Job:
     To use this class effectively, ensure that the following environment variables are
     set in your environment:
 
-    - ``AUTOMIZOR_API_HOST``: The URL of the `Automizor API` host.
-    - ``AUTOMIZOR_API_TOKEN``: The authentication token for API access.
+    - ``AUTOMIZOR_AGENT_TOKEN``: The token for authenticating against the `Automizor API`.
     - ``AUTOMIZOR_CONTEXT_FILE``: The path to a local file containing job context, if used.
     - ``AUTOMIZOR_JOB_ID``: The identifier for the current job, used when fetching context via API.
 
@@ -51,13 +50,12 @@ class Job:
     """
 
     def __init__(self):
-        self._api_host = os.getenv("AUTOMIZOR_API_HOST")
-        self._api_token = os.getenv("AUTOMIZOR_API_TOKEN")
-        self._context_file = os.getenv("AUTOMIZOR_CONTEXT_FILE")
-        self._job_id = os.getenv("AUTOMIZOR_JOB_ID")
+        self._context_file = os.getenv("AUTOMIZOR_CONTEXT_FILE", None)
+        self._job_id = os.getenv("AUTOMIZOR_JOB_ID", None)
 
+        self.url, self.token = get_api_config()
         self.session = requests.Session()
-        self.session.headers.update(get_headers(self._api_token))
+        self.session.headers.update(get_headers(self.token))
 
     def get_context(self) -> dict:
         """
@@ -69,8 +67,7 @@ class Job:
         This is useful in environments where direct access to the `Automizor API` is
         not possible or preferred.
         2. The `Automizor API`, using the job ID (`AUTOMIZOR_JOB_ID`) to fetch the specific
-        job context. This requires valid API host (`AUTOMIZOR_API_HOST`) and token
-        (`AUTOMIZOR_API_TOKEN`) settings.
+        job context.
 
         Returns:
             A dictionary containing the job context.
@@ -121,7 +118,7 @@ class Job:
             return json.load(file)
 
     def _read_job_context(self) -> dict:
-        url = f"https://{self._api_host}/api/v1/rpa/job/{self._job_id}/"
+        url = f"https://{self.url}/api/v1/rpa/job/{self._job_id}/"
         try:
             response = self.session.get(url, timeout=10)
             response.raise_for_status()

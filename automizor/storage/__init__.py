@@ -3,7 +3,6 @@ import mimetypes
 from functools import lru_cache
 from pathlib import Path
 
-from ._exceptions import AssetNotFoundError, AutomizorStorageError
 from ._storage import JSON
 
 
@@ -167,8 +166,6 @@ def set_text(name: str, text: str) -> None:
 
 
 __all__ = [
-    "AssetNotFoundError",
-    "AutomizorStorageError",
     "list_assets",
     "delete_asset",
     "get_bytes",
