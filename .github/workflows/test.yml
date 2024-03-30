@@ -3,7 +3,7 @@ name: test automizor
 on: [push]
 
 env:
-  AUTOMIZOR_AGENT_TOKEN: token@host
+  AUTOMIZOR_AGENT_TOKEN: token@foo.automizor.localhost:8443
 
 jobs:
   test:
