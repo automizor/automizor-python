@@ -4,8 +4,8 @@ from typing import Dict, List, Union
 
 import requests
 
+from automizor.exceptions import AutomizorError
 from automizor.utils import get_headers
-from ._exceptions import AutomizorJobError, ContextNotFoundError
 
 JSON = Union[str, int, float, bool, None, Dict[str, "JSON"], List["JSON"]]
 
@@ -127,14 +127,8 @@ class Job:
             response.raise_for_status()
             return response.json().get("context", {})
         except requests.HTTPError as exc:
-            if exc.response.status_code == 404:
-                raise ContextNotFoundError(
-                    f"Context for job '{self._job_id}' not found"
-                ) from exc
-            raise AutomizorJobError(f"Failed to get job context: {exc}") from exc
+            raise AutomizorError.from_response(
+                exc.response, "Failed to get job context"
+            ) from exc
         except Exception as exc:
-            try:
-                msg = exc.response.json()
-            except (AttributeError, ValueError):
-                msg = str(exc)
-            raise AutomizorJobError(f"Failed to get job context: {msg}") from exc
+            raise AutomizorError("Failed to get job context") from exc

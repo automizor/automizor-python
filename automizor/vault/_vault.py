@@ -3,9 +3,10 @@ from dataclasses import asdict
 
 import requests
 
+from automizor.exceptions import AutomizorError, NotFound
 from automizor.utils import get_headers
+
 from ._container import SecretContainer
-from ._exceptions import AutomizorVaultError, SecretNotFoundError
 
 
 class Vault:
@@ -67,7 +68,7 @@ class Vault:
 
         try:
             return self._update_secret(secret)
-        except SecretNotFoundError:
+        except NotFound:
             return self._create_secret(secret)
 
     def get_secret(self, name) -> SecretContainer:
@@ -108,12 +109,12 @@ class Vault:
             response = self.session.post(url, timeout=10, json=asdict(secret))
             response.raise_for_status()
             return SecretContainer(**response.json())
+        except requests.HTTPError as exc:
+            raise AutomizorError.from_response(
+                exc.response, "Failed to create secret"
+            ) from exc
         except Exception as exc:
-            try:
-                msg = exc.response.json()
-            except (AttributeError, ValueError):
-                msg = str(exc)
-            raise AutomizorVaultError(f"Failed to create secret: {msg or exc}") from exc
+            raise AutomizorError("Failed to create secret") from exc
 
     def _get_secret(self, name: str) -> SecretContainer:
         url = f"https://{self._api_host}/api/v1/vault/secret/{name}/"
@@ -122,15 +123,11 @@ class Vault:
             response.raise_for_status()
             return SecretContainer(**response.json())
         except requests.HTTPError as exc:
-            if exc.response.status_code == 404:
-                raise SecretNotFoundError(f"Secret '{name}' not found") from exc
-            raise AutomizorVaultError(f"Failed to get secret: {exc}") from exc
+            raise AutomizorError.from_response(
+                exc.response, "Failed to get secret"
+            ) from exc
         except Exception as exc:
-            try:
-                msg = exc.response.json()
-            except (AttributeError, ValueError):
-                msg = str(exc)
-            raise AutomizorVaultError(f"Failed to get secret: {msg}") from exc
+            raise AutomizorError("Failed to get secret") from exc
 
     def _update_secret(self, secret: SecretContainer) -> SecretContainer:
         url = f"https://{self._api_host}/api/v1/vault/secret/{secret.name}/"
@@ -139,12 +136,8 @@ class Vault:
             response.raise_for_status()
             return SecretContainer(**response.json())
         except requests.HTTPError as exc:
-            if exc.response.status_code == 404:
-                raise SecretNotFoundError(f"Secret '{secret.name}' not found") from exc
-            raise AutomizorVaultError(f"Failed to get secret: {exc}") from exc
+            raise AutomizorError.from_response(
+                exc.response, "Failed to update secret"
+            ) from exc
         except Exception as exc:
-            try:
-                msg = exc.response.json()
-            except (AttributeError, ValueError):
-                msg = str(exc)
-            raise AutomizorVaultError(f"Failed to set secret: {msg}") from exc
+            raise AutomizorError("Failed to update secret") from exc

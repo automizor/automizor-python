@@ -2,7 +2,6 @@ from functools import lru_cache
 from typing import Any, Dict
 
 from ._container import SecretContainer
-from ._exceptions import AutomizorVaultError, SecretNotFoundError
 
 
 @lru_cache
@@ -80,8 +79,6 @@ def set_secret(secret: SecretContainer) -> SecretContainer:
 
 
 __all__ = [
-    "AutomizorVaultError",
-    "SecretNotFoundError",
     "SecretContainer",
     "create_secret",
     "get_secret",
