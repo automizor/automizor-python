@@ -44,6 +44,14 @@ class Vault:
         vault.set_secret(secret)
     """
 
+    _instance = None
+
+    @classmethod
+    def get_instance(cls):
+        if cls._instance is None:
+            cls._instance = Vault()
+        return cls._instance
+
     def __init__(self):
         self._api_host = os.getenv("AUTOMIZOR_API_HOST")
         self._api_token = os.getenv("AUTOMIZOR_API_TOKEN")

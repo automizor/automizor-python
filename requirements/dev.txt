@@ -15,23 +15,34 @@ idna==3.6
     # via
     #   automizor
     #   requests
+    #   yarl
 iniconfig==2.0.0
     # via pytest
+multidict==6.0.5
+    # via yarl
 packaging==24.0
     # via pytest
 pluggy==1.4.0
     # via pytest
 pytest==8.1.1
     # via
-    #   pytest-antilru
     #   pytest-cov
     #   pytest-mock
-pytest-antilru==1.1.1
+    #   pytest-vcr
 pytest-cov==5.0.0
 pytest-mock==3.14.0
+pytest-vcr==1.0.2
+pyyaml==6.0.1
+    # via vcrpy
 requests==2.31.0
     # via automizor
 urllib3==2.2.1
     # via
     #   automizor
     #   requests
+vcrpy==6.0.1
+    # via pytest-vcr
+wrapt==1.16.0
+    # via vcrpy
+yarl==1.9.4
+    # via vcrpy

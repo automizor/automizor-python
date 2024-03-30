@@ -1,15 +1,8 @@
-from functools import lru_cache
 from typing import Any, Dict
 
 from ._container import SecretContainer
 from ._exceptions import AutomizorVaultError, SecretNotFoundError
-
-
-@lru_cache
-def _get_vault():
-    from ._vault import Vault
-
-    return Vault()
+from ._vault import Vault
 
 
 def create_secret(
@@ -39,7 +32,7 @@ def create_secret(
         value=value,
     )
 
-    vault = _get_vault()
+    vault = Vault.get_instance()
     return vault.create_secret(secret)
 
 
@@ -57,7 +50,7 @@ def get_secret(name: str) -> SecretContainer:
         AutomizorVaultError: If retrieving the secret fails.
     """
 
-    vault = _get_vault()
+    vault = Vault.get_instance()
     return vault.get_secret(name)
 
 
@@ -75,7 +68,7 @@ def set_secret(secret: SecretContainer) -> SecretContainer:
         AutomizorVaultError: If updating the secret fails.
     """
 
-    vault = _get_vault()
+    vault = Vault.get_instance()
     return vault.set_secret(secret)
 
 

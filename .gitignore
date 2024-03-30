@@ -9,3 +9,4 @@ dist/
 .vscode
 .coverage
 pytest-report.xml
+cov.xml
