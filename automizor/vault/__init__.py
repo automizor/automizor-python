@@ -1,7 +1,6 @@
 from typing import Any, Dict
 
 from ._container import SecretContainer
-from ._exceptions import AutomizorVaultError, SecretNotFoundError
 from ._vault import Vault
 
 
