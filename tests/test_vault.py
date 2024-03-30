@@ -1,6 +1,6 @@
 import pytest
 
-from automizor import vault
+from automizor import exceptions, vault
 
 
 @pytest.mark.vcr()
@@ -19,5 +19,5 @@ def test_vault_secret_create_get_set(test_secret):
 
 @pytest.mark.vcr()
 def test_vault_secret_not_found():
-    with pytest.raises(vault.SecretNotFoundError):
+    with pytest.raises(exceptions.NotFound):
         vault.get_secret("nonexistent")
