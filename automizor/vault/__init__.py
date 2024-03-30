@@ -73,8 +73,6 @@ def set_secret(secret: SecretContainer) -> SecretContainer:
 
 
 __all__ = [
-    "AutomizorVaultError",
-    "SecretNotFoundError",
     "SecretContainer",
     "create_secret",
     "get_secret",
