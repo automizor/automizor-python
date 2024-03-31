@@ -3,11 +3,12 @@ from typing import Dict, List, Union
 import requests
 
 from automizor.exceptions import AutomizorError, NotFound
-from automizor.utils import get_api_config, get_headers
+from automizor.utils import get_api_config, get_headers, singleton
 
 JSON = Union[str, int, float, bool, None, Dict[str, "JSON"], List["JSON"]]
 
 
+@singleton
 class Storage:
     """
     `Storage` is a class designed to interact with the `Automizor Platform` for managing
@@ -50,15 +51,10 @@ class Storage:
         text_data = storage.get_text("AssetName")
     """
 
-    __instance = None
-
-    def __new__(cls):
-        if cls.__instance is None:
-            cls.__instance = super().__new__(cls)
-            cls.url, cls.token = get_api_config()
-            cls.session = requests.Session()
-            cls.session.headers.update(get_headers(cls.token))
-        return cls.__instance
+    def __init__(self):
+        self.url, self.token = get_api_config()
+        self.session = requests.Session()
+        self.session.headers.update(get_headers(self.token))
 
     def list_assets(self) -> List[str]:
         """

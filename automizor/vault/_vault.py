@@ -3,11 +3,12 @@ from dataclasses import asdict
 import requests
 
 from automizor.exceptions import AutomizorError, NotFound
-from automizor.utils import get_api_config, get_headers
+from automizor.utils import get_api_config, get_headers, singleton
 
 from ._container import SecretContainer
 
 
+@singleton
 class Vault:
     """
     `Vault` is a secure storage class within the `Automizor Platform` for managing
@@ -42,15 +43,10 @@ class Vault:
         vault.set_secret(secret)
     """
 
-    __instance = None
-
-    def __new__(cls):
-        if cls.__instance is None:
-            cls.__instance = super().__new__(cls)
-            cls.url, cls.token = get_api_config()
-            cls.session = requests.Session()
-            cls.session.headers.update(get_headers(cls.token))
-        return cls.__instance
+    def __init__(self):
+        self.url, self.token = get_api_config()
+        self.session = requests.Session()
+        self.session.headers.update(get_headers(self.token))
 
     def create_secret(self, secret: SecretContainer) -> SecretContainer:
         """
