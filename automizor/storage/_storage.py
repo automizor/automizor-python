@@ -50,10 +50,15 @@ class Storage:
         text_data = storage.get_text("AssetName")
     """
 
-    def __init__(self):
-        self.url, self.token = get_api_config()
-        self.session = requests.Session()
-        self.session.headers.update(get_headers(self.token))
+    __instance = None
+
+    def __new__(cls):
+        if cls.__instance is None:
+            cls.__instance = super().__new__(cls)
+            cls.url, cls.token = get_api_config()
+            cls.session = requests.Session()
+            cls.session.headers.update(get_headers(cls.token))
+        return cls.__instance
 
     def list_assets(self) -> List[str]:
         """

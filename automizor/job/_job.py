@@ -49,13 +49,18 @@ class Job:
         job.set_result("result_name", {"key": "value"})
     """
 
-    def __init__(self):
-        self._context_file = os.getenv("AUTOMIZOR_CONTEXT_FILE", None)
-        self._job_id = os.getenv("AUTOMIZOR_JOB_ID", None)
+    __instance = None
 
-        self.url, self.token = get_api_config()
-        self.session = requests.Session()
-        self.session.headers.update(get_headers(self.token))
+    def __new__(cls):
+        if cls.__instance is None:
+            cls.__instance = super().__new__(cls)
+            cls._context_file = os.getenv("AUTOMIZOR_CONTEXT_FILE", None)
+            cls._job_id = os.getenv("AUTOMIZOR_JOB_ID", None)
+
+            cls.url, cls.token = get_api_config()
+            cls.session = requests.Session()
+            cls.session.headers.update(get_headers(cls.token))
+        return cls.__instance
 
     def get_context(self) -> dict:
         """

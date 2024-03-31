@@ -21,3 +21,9 @@ def test_vault_secret_create_get_set(test_secret):
 def test_vault_secret_not_found():
     with pytest.raises(exceptions.NotFound):
         vault.get_secret("nonexistent")
+
+
+def test_vault_singleton():
+    vault1 = vault.Vault()
+    vault2 = vault.Vault()
+    assert vault1 is vault2
