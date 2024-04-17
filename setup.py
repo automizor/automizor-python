@@ -6,7 +6,7 @@ setup(
     name="automizor",
     version=version,
     description="Python Automizor framework",
-    url="https://github.com/automizor/automizor",
+    url="https://github.com/automizor/automizor-python",
     author="Christian Fischer",
     author_email="christian@automizor.io",
     license="Apache License",
