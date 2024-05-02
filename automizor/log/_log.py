@@ -1,5 +1,6 @@
 import json
 import os
+from datetime import datetime, timezone
 from typing import Dict, List, Union
 
 LOG_LEVELS = {
@@ -85,7 +86,8 @@ class Log:
         except json.JSONDecodeError:
             pass
 
-        data.append({"level": level, "msg": msg})
+        timestamp = datetime.now(timezone.utc).isoformat()
+        data.append({"level": level, "msg": msg, "timestamp": timestamp})
 
         with open(file_path, "w", encoding="utf-8") as file:
             json.dump(data, file, ensure_ascii=False)
