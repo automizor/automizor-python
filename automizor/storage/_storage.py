@@ -85,7 +85,7 @@ class Storage:
             raise AutomizorError("Failed to list assets") from exc
         return asset_names
 
-    def delete_asset(self, name: str) -> None:
+    def delete_asset(self, name: str):
         """
         Deletes the specified asset.
 
@@ -181,7 +181,7 @@ class Storage:
 
         return self._download_file(name, mode="text")
 
-    def set_bytes(self, name: str, content: bytes, content_type: str) -> None:
+    def set_bytes(self, name: str, content: bytes, content_type: str):
         """
         Uploads the specified content as a new asset.
 
@@ -200,7 +200,7 @@ class Storage:
         except NotFound:
             self._create_asset(name, content, content_type)
 
-    def _create_asset(self, name: str, content: bytes, content_type: str) -> None:
+    def _create_asset(self, name: str, content: bytes, content_type: str):
         """
         Creates a new asset with the specified content.
 
@@ -269,7 +269,7 @@ class Storage:
         except Exception as exc:
             raise AutomizorError("Failed to get asset URL") from exc
 
-    def _update_asset(self, name: str, content: bytes, content_type: str) -> None:
+    def _update_asset(self, name: str, content: bytes, content_type: str):
         """
         Updates the specified asset with new content.
 

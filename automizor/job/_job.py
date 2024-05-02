@@ -111,7 +111,7 @@ class Job:
         data[name] = value
 
         with open(file_path, "w", encoding="utf-8") as file:
-            json.dump(data, file, ensure_ascii=False, indent=4)
+            json.dump(data, file, ensure_ascii=False)
 
     def _read_file_context(self) -> dict:
         with open(self._context_file, "r", encoding="utf-8") as file:

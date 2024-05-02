@@ -45,7 +45,7 @@ class SecretContainer:
         """Secret.keys() -> a set-like object providing a view on secret's keys."""
         return self.value.keys()
 
-    def update(self, pairs: Dict[str, Any]) -> None:
+    def update(self, pairs: Dict[str, Any]):
         """Update the secret's dictionary with the key-value pairs from pairs."""
         self.value.update(pairs)
 

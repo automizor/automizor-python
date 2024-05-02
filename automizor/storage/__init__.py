@@ -2,6 +2,7 @@ import json
 import mimetypes
 from functools import lru_cache
 from pathlib import Path
+from typing import List
 
 from ._storage import JSON
 
@@ -13,7 +14,7 @@ def _get_storage():
     return Storage()
 
 
-def list_assets() -> list[str]:
+def list_assets() -> List[str]:
     """
     Retrieves a list of all asset names.
 
@@ -25,7 +26,7 @@ def list_assets() -> list[str]:
     return storage.list_assets()
 
 
-def delete_asset(name: str) -> None:
+def delete_asset(name: str):
     """
     Deletes the specified asset.
 
@@ -98,7 +99,7 @@ def get_text(name: str) -> str:
     return storage.get_text(name)
 
 
-def set_bytes(name: str, data: bytes, content_type="application/octet-stream") -> None:
+def set_bytes(name: str, data: bytes, content_type="application/octet-stream"):
     """
     Uploads raw bytes as an asset.
 
@@ -112,7 +113,7 @@ def set_bytes(name: str, data: bytes, content_type="application/octet-stream") -
     storage.set_bytes(name, data, content_type)
 
 
-def set_file(name: str, path: str, content_type: str = None) -> None:
+def set_file(name: str, path: str, content_type: str = None):
     """
     Uploads a file as an asset.
 
@@ -132,7 +133,7 @@ def set_file(name: str, path: str, content_type: str = None) -> None:
     storage.set_bytes(name, content, content_type)
 
 
-def set_json(name: str, value: JSON, **kwargs) -> None:
+def set_json(name: str, value: JSON, **kwargs):
     """
     Uploads JSON data as an asset.
 
@@ -149,7 +150,7 @@ def set_json(name: str, value: JSON, **kwargs) -> None:
     storage.set_bytes(name, content, content_type)
 
 
-def set_text(name: str, text: str) -> None:
+def set_text(name: str, text: str):
     """
     Uploads text content as an asset.
 
