@@ -1,6 +1,6 @@
 from functools import lru_cache
 
-from ._log import JSON
+from ._log import VALUE
 
 
 @lru_cache
@@ -10,61 +10,61 @@ def _get_log():
     return Log()
 
 
-def debug(msg: JSON):
+def debug(msg: VALUE):
     """
     Writes a debug log message with a level of "DEBUG".
 
     Parameters:
-        msg (JSON): The log message to write. This can be a string, number, boolean, dictionary,
-            list, or None.
+        msg (VALUE): The log message to write. This can be a boolean, string, bytes, integer,
+            or float value.
     """
 
     _get_log().write_log("DEBUG", msg)
 
 
-def info(msg: JSON):
+def info(msg: VALUE):
     """
     Writes an info log message with a level of "INFO".
 
     Parameters:
-        msg (JSON): The log message to write. This can be a string, number, boolean, dictionary,
-            list, or None.
+        msg (VALUE): The log message to write. This can be a boolean, string, bytes, integer,
+            or float value.
     """
 
     _get_log().write_log("INFO", msg)
 
 
-def warning(msg: JSON):
+def warning(msg: VALUE):
     """
     Writes a warning log message with a level of "WARNING".
 
     Parameters:
-        msg (JSON): The log message to write. This can be a string, number, boolean, dictionary,
-            list, or None.
+        msg (VALUE): The log message to write. This can be a boolean, string, bytes, integer,
+            or float value.
     """
 
     _get_log().write_log("WARNING", msg)
 
 
-def error(msg: JSON):
+def error(msg: VALUE):
     """
     Writes an error log message with a level of "ERROR".
 
     Parameters:
-        msg (JSON): The log message to write. This can be a string, number, boolean, dictionary,
-            list, or None.
+        msg (VALUE): The log message to write. This can be a boolean, string, bytes, integer,
+            or float value.
     """
 
     _get_log().write_log("ERROR", msg)
 
 
-def critical(msg: JSON):
+def critical(msg: VALUE):
     """
     Writes a critical log message with a level of "CRITICAL".
 
     Parameters:
-        msg (JSON): The log message to write. This can be a string, number, boolean, dictionary,
-            list, or None.
+        msg (VALUE): The log message to write. This can be a boolean, string, bytes, integer,
+            or float value.
     """
 
     _get_log().write_log("CRITICAL", msg)

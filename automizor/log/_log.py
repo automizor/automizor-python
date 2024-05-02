@@ -1,7 +1,7 @@
 import json
 import os
 from datetime import datetime, timezone
-from typing import Dict, List, Union
+from typing import Union
 
 LOG_LEVELS = {
     "DEBUG": 1,
@@ -11,7 +11,7 @@ LOG_LEVELS = {
     "CRITICAL": 5,
 }
 
-JSON = Union[str, int, float, bool, None, Dict[str, "JSON"], List["JSON"]]
+VALUE = Union[bool, str, bytes, int, float]
 
 
 class Log:
@@ -34,7 +34,7 @@ class Log:
         log.set_level("INFO")
 
         # Write a log message
-        log.info({"key": "value"})
+        log.info("This is an info message")
     """
 
     def __init__(self):
@@ -57,15 +57,15 @@ class Log:
 
         self.level = level
 
-    def write_log(self, level: str, msg: JSON):
+    def write_log(self, level: str, msg: VALUE):
         """
         Write a log message with the specified log level.
 
         Parameters:
             level (str): The log level of the message. Valid log levels are "DEBUG", "INFO",
                 "WARNING", "ERROR", and "CRITICAL".
-            msg (JSON): The log message to write. This can be a string, number, boolean, dictionary,
-                list, or None.
+            msg (VALUE): The log message to write. This can be a boolean, string, bytes, integer,
+                or float value.
 
         Raises:
             ValueError: If an invalid log level is provided.
