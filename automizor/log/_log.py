@@ -1,7 +1,7 @@
 import json
 import os
 from datetime import datetime, timezone
-from typing import Union
+from typing import Dict, List, Union
 
 LOG_LEVELS = {
     "DEBUG": 1,
@@ -11,7 +11,8 @@ LOG_LEVELS = {
     "CRITICAL": 5,
 }
 
-VALUE = Union[bool, str, bytes, int, float]
+JSON = Union[str, int, float, bool, None, Dict[str, "JSON"], List["JSON"]]
+VALUE = Union[str, int, float, bool, JSON]
 
 
 class Log:
@@ -64,8 +65,8 @@ class Log:
         Parameters:
             level (str): The log level of the message. Valid log levels are "DEBUG", "INFO",
                 "WARNING", "ERROR", and "CRITICAL".
-            msg (VALUE): The log message to write. This can be a boolean, string, bytes, integer,
-                or float value.
+            msg (VALUE): The log message to write. This can be a boolean, string, integer, float
+                or a JSON-serializable dictionary or list.
 
         Raises:
             ValueError: If an invalid log level is provided.
@@ -85,6 +86,9 @@ class Log:
                     data = json.load(file)
         except json.JSONDecodeError:
             pass
+
+        if isinstance(msg, (dict, list)):
+            msg = json.dumps(msg, ensure_ascii=False)
 
         timestamp = datetime.now(timezone.utc).isoformat()
         data.append({"level": level, "msg": msg, "timestamp": timestamp})
