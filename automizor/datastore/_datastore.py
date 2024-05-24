@@ -64,7 +64,7 @@ class DataStore:
         name: str,
         primary_key: str | None = None,
         secondary_key: str | None = None,
-    ) -> dict:
+    ) -> JSON:
         params = (
             {"primary_key": primary_key, "secondary_key": secondary_key}
             if primary_key or secondary_key

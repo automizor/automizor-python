@@ -30,20 +30,16 @@ class DataStoreProxy(types.ModuleType):
             from automizor import datastore
 
             # Initialize or update json store
-            datastore.countries = {
-                "US": {
+            datastore.countries = [
+                {
                     "name": "United States",
-                    "capital": "Washington, D.C.",
-                    "population": 331449281,
-                    "area": 9833520
+                    "code": "US",
                 },
-                "CA": {
+                {
                     "name": "Canada",
-                    "capital": "Ottawa",
-                    "population": 38005238,
-                    "area": 9984670
-                }
-            }
+                    "code": "CA",
+                },
+            ]
 
             # Get values from json store
             countries = datastore.countries()
