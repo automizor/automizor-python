@@ -23,11 +23,6 @@ class DataStoreProxy(types.ModuleType):
     through attribute access and assignment, making it simple to work with different
     data structures.
 
-    The `DataStoreProxy` dynamically determines the type of data store being accessed
-    and adapts its behavior accordingly. For JSON data stores, it directly retrieves
-    values. For KKV stores, it provides a wrapper function that facilitates more complex
-    data retrieval operations based on primary and secondary keys.
-
     Example usage:
 
         .. code-block:: python
@@ -51,7 +46,7 @@ class DataStoreProxy(types.ModuleType):
             }
 
             # Get values from json store
-            countries = datastore.countries
+            countries = datastore.countries()
 
             # Initialize or update kkv store
             datastore.movies = {
@@ -98,13 +93,10 @@ class DataStoreProxy(types.ModuleType):
 
     def __getattr__(self, name):
         datastore = _get_datastore()
-        datastore_type = datastore.type(name)
 
         def wrapper(primary_key=None, secondary_key=None):
             return datastore.get_values(name, primary_key, secondary_key)
 
-        if datastore_type == "JSONDataStore":
-            return datastore.get_values(name)
         return wrapper
 
     def __setattr__(self, name, values: JSON):

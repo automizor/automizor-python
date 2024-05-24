@@ -15,7 +15,7 @@ class DataStore:
     data using a unified API.
 
     The class initializes an HTTP session with the necessary headers for authentication, and
-    provides methods to get the type of data store, retrieve values, and set values in the store.
+    provides methods to retrieve values, and set values in the store.
 
     Attributes:
         url (str): The base URL for the API endpoint.
@@ -27,19 +27,6 @@ class DataStore:
         self.url, self.token = get_api_config()
         self.session = requests.Session()
         self.session.headers.update(get_headers(self.token))
-
-    def type(self, name: str) -> str:
-        """
-        Gets the type of the specified data store.
-
-        Parameters:
-            name (str): The name of the data store.
-
-        Returns:
-            str: The type of the data store.
-        """
-
-        return self._get_type(name)
 
     def get_values(
         self,
@@ -71,19 +58,6 @@ class DataStore:
         """
 
         return self._set_values(name, values)
-
-    def _get_type(self, name: str) -> str:
-        url = f"https://{self.url}/api/v1/workflow/datastore/{name}/"
-        try:
-            response = self.session.get(url, timeout=10)
-            response.raise_for_status()
-            return response.json().get("datastore_type")
-        except requests.HTTPError as exc:
-            raise AutomizorError.from_response(
-                exc.response, "Failed to get datastore values"
-            ) from exc
-        except Exception as exc:
-            raise AutomizorError("Failed to get datastore values") from exc
 
     def _get_values(
         self,
