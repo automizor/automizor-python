@@ -1,8 +1,6 @@
-import sys
-import types
 from functools import lru_cache
 
-from ._datastore import JSON
+from ._container import DataStoreContainer
 
 
 @lru_cache
@@ -12,16 +10,11 @@ def _get_datastore():
     return DataStore()
 
 
-class DataStoreProxy(types.ModuleType):
+def get_store(name: str) -> DataStoreContainer:
     """
-    `DataStoreProxy` acts as a dynamic interface for interacting with various types of
-    data stores within the `Automizor Platform`. It provides a convenient way to access
-    and manipulate data stored in JSON and Key-Key-Value (KKV) formats.
-
-    This class leverages the `Automizor DataStore` module to fetch and update data,
-    utilizing a caching mechanism to enhance performance. The primary interaction is
-    through attribute access and assignment, making it simple to work with different
-    data structures.
+    Get a store container by name. The `DataStoreContainer` is a wrapper
+    around the data store that provides a get and set method to interact
+    with the data store.
 
     Example usage:
 
@@ -29,8 +22,11 @@ class DataStoreProxy(types.ModuleType):
 
             from automizor import datastore
 
+            # Get a data store countries
+            countries = datastore.get_store("countries")
+
             # Initialize or update json store
-            datastore.countries = [
+            countries.set([
                 {
                     "name": "United States",
                     "code": "US",
@@ -39,27 +35,30 @@ class DataStoreProxy(types.ModuleType):
                     "name": "Canada",
                     "code": "CA",
                 },
-            ]
+            ])
 
             # Get values from json store
-            countries = datastore.countries()
+            result = countries.get()
+
+            # Get a data store movies
+            movies = datastore.get_store("movies")
 
             # Initialize or update kkv store
-            datastore.movies = {
+            movies.set({
                 "US": {
                     "action": {
                         "Die Hard": 1988,
                         "The Matrix": 1999
                     }
                 }
-            }
+            })
 
             # Get values from kkv store
-            movies = datastore.movies("US")
-            movies_action = datastore.movies("US", "action")
+            result = movies.get("US")
+            result = movies.get("US", "action")
 
             # Insert or update values
-            datastore.movies = {
+            movies.set({
                 "US": {
                     "action": {
                         "Die Hard": 1988,
@@ -71,33 +70,24 @@ class DataStoreProxy(types.ModuleType):
                         "Superbad": 2007
                     }
                 }
-            }
+            })
 
             # Delete secondary key
-            datastore.movies = {
+            movies.set({
                 "US": {
                     "action": None
                 }
-            }
+            })
 
             # Delete primary key
-            datastore.movies = {
+            movies.set({
                 "US": None
-            }
+            })
 
     """
 
-    def __getattr__(self, name):
-        datastore = _get_datastore()
-
-        def wrapper(primary_key=None, secondary_key=None):
-            return datastore.get_values(name, primary_key, secondary_key)
-
-        return wrapper
-
-    def __setattr__(self, name, values: JSON):
-        datastore = _get_datastore()
-        datastore.set_values(name, values)
-
-
-sys.modules[__name__] = DataStoreProxy(__name__)
+    datastore = _get_datastore()
+    return DataStoreContainer(
+        datastore=datastore,
+        name=name,
+    )

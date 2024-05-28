@@ -10,17 +10,18 @@ JSON = Union[str, int, float, bool, None, Dict[str, "JSON"], List["JSON"]]
 
 class DataStore:
     """
-    `DataStore` is a class designed to interface with the `Automizor Platform` to manage and
-    manipulate data stored in various formats. It supports operations to retrieve and update
-    data using a unified API.
+    `DataStore` is a class designed to interface with the `Automizor Platform`
+    to manage and manipulate data stored in various formats. It supports
+    operations to retrieve and update data using a unified API.
 
-    The class initializes an HTTP session with the necessary headers for authentication, and
-    provides methods to retrieve values, and set values in the store.
+    The class initializes an HTTP session with the necessary headers for
+    authentication, and provides methods to retrieve values, and set values in
+    the store.
 
     Attributes:
         url (str): The base URL for the API endpoint.
         token (str): The authentication token for API access.
-        session (requests.Session): The HTTP session used for making API requests.
+        session (requests.Session): The HTTP session used to make API requests.
     """
 
     def __init__(self):
@@ -39,8 +40,8 @@ class DataStore:
 
         Parameters:
             name (str): The name of the data store.
-            primary_key (str, optional): The primary key for the values. Defaults to None.
-            secondary_key (str, optional): The secondary key for the values. Defaults to None.
+            primary_key (str, optional): The primary key for the values.
+            secondary_key (str, optional): The secondary key for the values.
 
         Returns:
             JSON: The values from the data store.
