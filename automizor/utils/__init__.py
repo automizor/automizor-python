@@ -29,3 +29,15 @@ def get_headers(token: str) -> dict:
         "Authorization": f"Token {token}",
         "User-Agent": f"Automizor/{version} {OS_SYSTEM}/{OS_RELEASE}",
     }
+
+
+# Decorator to make a class a singleton
+def singleton(class_):
+    instances = {}
+
+    def get_instance(*args, **kwargs):
+        if class_ not in instances:
+            instances[class_] = class_(*args, **kwargs)
+        return instances[class_]
+
+    return get_instance

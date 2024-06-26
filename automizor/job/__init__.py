@@ -1,13 +1,4 @@
-from functools import lru_cache
-
-from ._job import JSON
-
-
-@lru_cache
-def _get_job():
-    from ._job import Job
-
-    return Job()
+from ._job import JSON, Job
 
 
 def get_context() -> dict:
@@ -22,7 +13,7 @@ def get_context() -> dict:
         AutomizorJobError: If retrieving the job context fails.
     """
 
-    job = _get_job()
+    job = Job()
     return job.get_context()
 
 
@@ -38,7 +29,7 @@ def set_result(name: str, value: JSON):
     Note: Errors during file operations will raise unhandled exceptions.
     """
 
-    job = _get_job()
+    job = Job()
     return job.set_result(name, value)
 
 

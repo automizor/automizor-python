@@ -3,11 +3,12 @@ from typing import Dict, List, Union
 import requests
 
 from automizor.exceptions import AutomizorError, NotFound
-from automizor.utils import get_api_config, get_headers
+from automizor.utils import get_api_config, get_headers, singleton
 
 JSON = Union[str, int, float, bool, None, Dict[str, "JSON"], List["JSON"]]
 
 
+@singleton
 class Storage:
     """
     `Storage` is a class designed to interact with the `Automizor Platform` for managing

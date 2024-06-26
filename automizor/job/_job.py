@@ -5,11 +5,12 @@ from typing import Dict, List, Union
 import requests
 
 from automizor.exceptions import AutomizorError
-from automizor.utils import get_api_config, get_headers
+from automizor.utils import get_api_config, get_headers, singleton
 
 JSON = Union[str, int, float, bool, None, Dict[str, "JSON"], List["JSON"]]
 
 
+@singleton
 class Job:
     """
     `Job` is a class that facilitates interaction with job-specific data within the
@@ -52,7 +53,6 @@ class Job:
     def __init__(self):
         self._context_file = os.getenv("AUTOMIZOR_CONTEXT_FILE", None)
         self._job_id = os.getenv("AUTOMIZOR_JOB_ID", None)
-
         self.url, self.token = get_api_config()
         self.session = requests.Session()
         self.session.headers.update(get_headers(self.token))
