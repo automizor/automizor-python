@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from ._datastore import JSON, DataStore
+from automizor.utils import JSON
 
 
 @dataclass
@@ -13,6 +13,8 @@ class DataStoreContainer:
         datastore: The data store.
         name: The name of the data store.
     """
+
+    from ._datastore import DataStore
 
     datastore: DataStore
     name: str

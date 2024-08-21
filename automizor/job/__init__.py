@@ -1,13 +1,13 @@
-from functools import lru_cache
+from automizor.utils import JSON
 
-from ._job import JSON
+from ._job import Job
 
 
-@lru_cache
-def _get_job():
-    from ._job import Job
-
-    return Job()
+def configure(api_token: str):
+    """
+    Configures the Job instance with the provided API token.
+    """
+    Job.configure(api_token)
 
 
 def get_context() -> dict:
@@ -22,7 +22,7 @@ def get_context() -> dict:
         AutomizorJobError: If retrieving the job context fails.
     """
 
-    job = _get_job()
+    job = Job.get_instance()
     return job.get_context()
 
 
@@ -38,11 +38,12 @@ def set_result(name: str, value: JSON):
     Note: Errors during file operations will raise unhandled exceptions.
     """
 
-    job = _get_job()
+    job = Job.get_instance()
     return job.set_result(name, value)
 
 
 __all__ = [
+    "configure",
     "get_context",
     "set_result",
 ]

@@ -42,10 +42,22 @@ class Vault:
         vault.set_secret(secret)
     """
 
-    def __init__(self):
-        self.url, self.token = get_api_config()
+    _instance = None
+
+    @classmethod
+    def configure(cls, api_token: str | None = None):
+        cls._instance = cls(api_token)
+
+    def __init__(self, api_token: str | None = None):
+        self.url, self.token = get_api_config(api_token)
         self.session = requests.Session()
         self.session.headers.update(get_headers(self.token))
+
+    @classmethod
+    def get_instance(cls):
+        if cls._instance is None:
+            cls.configure()
+        return cls._instance
 
     def create_secret(self, secret: SecretContainer) -> SecretContainer:
         """

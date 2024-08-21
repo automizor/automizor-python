@@ -1,1 +1,1 @@
-# Automizor Python automation framework
+# Automizor Python SDK

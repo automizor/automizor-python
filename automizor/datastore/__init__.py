@@ -1,16 +1,15 @@
-from functools import lru_cache
-
 from ._container import DataStoreContainer
+from ._datastore import DataStore
 
 
-@lru_cache
-def _get_datastore():
-    from ._datastore import DataStore
+def configure(api_token: str):
+    """
+    Configures the DataStore instance with the provided API token.
+    """
+    DataStore.configure(api_token)
 
-    return DataStore()
 
-
-def get_store(name: str) -> DataStoreContainer:
+def get_store(name: str) -> "DataStoreContainer":
     """
     Get a store container by name. The `DataStoreContainer` is a wrapper
     around the data store that provides a get and set method to interact
@@ -86,8 +85,14 @@ def get_store(name: str) -> DataStoreContainer:
 
     """
 
-    datastore = _get_datastore()
+    datastore = DataStore.get_instance()
     return DataStoreContainer(
         datastore=datastore,
         name=name,
     )
+
+
+__all__ = [
+    "configure",
+    "get_store",
+]

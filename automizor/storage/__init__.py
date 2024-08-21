@@ -1,17 +1,18 @@
 import json
 import mimetypes
-from functools import lru_cache
 from pathlib import Path
 from typing import List
 
-from ._storage import JSON
+from automizor.utils import JSON
+
+from ._storage import Storage
 
 
-@lru_cache
-def _get_storage():
-    from ._storage import Storage
-
-    return Storage()
+def configure(api_token: str):
+    """
+    Configures the Storage instance with the provided API token.
+    """
+    Storage.configure(api_token)
 
 
 def list_assets() -> List[str]:
@@ -22,7 +23,7 @@ def list_assets() -> List[str]:
         A list of all asset names.
     """
 
-    storage = _get_storage()
+    storage = Storage.get_instance()
     return storage.list_assets()
 
 
@@ -34,7 +35,7 @@ def delete_asset(name: str):
         name: The name identifier of the asset to delete.
     """
 
-    storage = _get_storage()
+    storage = Storage.get_instance()
     storage.delete_asset(name)
 
 
@@ -49,7 +50,7 @@ def get_bytes(name: str) -> bytes:
         The raw byte content of the asset.
     """
 
-    storage = _get_storage()
+    storage = Storage.get_instance()
     return storage.get_bytes(name)
 
 
@@ -65,7 +66,7 @@ def get_file(name: str, path: str) -> str:
         The path to the saved file, confirming the operation's success.
     """
 
-    storage = _get_storage()
+    storage = Storage.get_instance()
     return storage.get_file(name, path)
 
 
@@ -80,7 +81,7 @@ def get_json(name: str) -> JSON:
         The parsed JSON data, which can be a dict, list, or primitive data type.
     """
 
-    storage = _get_storage()
+    storage = Storage.get_instance()
     return storage.get_json(name)
 
 
@@ -95,7 +96,7 @@ def get_text(name: str) -> str:
         The content of the asset as a text string.
     """
 
-    storage = _get_storage()
+    storage = Storage.get_instance()
     return storage.get_text(name)
 
 
@@ -109,7 +110,7 @@ def set_bytes(name: str, data: bytes, content_type="application/octet-stream"):
         content_type: The MIME type of the asset.
     """
 
-    storage = _get_storage()
+    storage = Storage.get_instance()
     storage.set_bytes(name, data, content_type)
 
 
@@ -124,12 +125,12 @@ def set_file(name: str, path: str, content_type: str = None):
     """
 
     content = Path(path).read_bytes()
-    if content_type is None:
+    if not content_type:
         content_type, _ = mimetypes.guess_type(path)
         if content_type is None:
             content_type = "application/octet-stream"
 
-    storage = _get_storage()
+    storage = Storage.get_instance()
     storage.set_bytes(name, content, content_type)
 
 
@@ -146,7 +147,7 @@ def set_json(name: str, value: JSON, **kwargs):
     content = json.dumps(value, **kwargs).encode("utf-8")
     content_type = "application/json"
 
-    storage = _get_storage()
+    storage = Storage.get_instance()
     storage.set_bytes(name, content, content_type)
 
 
@@ -162,11 +163,12 @@ def set_text(name: str, text: str):
     content = text.encode("utf-8")
     content_type = "text/plain"
 
-    storage = _get_storage()
+    storage = Storage.get_instance()
     storage.set_bytes(name, content, content_type)
 
 
 __all__ = [
+    "configure",
     "list_assets",
     "delete_asset",
     "get_bytes",
