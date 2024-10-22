@@ -137,4 +137,4 @@ class Job:
                 exc.response, "Failed to get job context"
             ) from exc
         except Exception as exc:
-            raise AutomizorError("Failed to get job context") from exc
+            raise AutomizorError(f"Failed to get job context: {exc}") from exc

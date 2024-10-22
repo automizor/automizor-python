@@ -122,7 +122,7 @@ class Vault:
                 exc.response, "Failed to create secret"
             ) from exc
         except Exception as exc:
-            raise AutomizorError("Failed to create secret") from exc
+            raise AutomizorError(f"Failed to create secret: {exc}") from exc
 
     def _get_secret(self, name: str) -> SecretContainer:
         url = f"https://{self.url}/api/v1/vault/secret/{name}/"
@@ -135,7 +135,7 @@ class Vault:
                 exc.response, "Failed to get secret"
             ) from exc
         except Exception as exc:
-            raise AutomizorError("Failed to get secret") from exc
+            raise AutomizorError(f"Failed to get secret: {exc}") from exc
 
     def _update_secret(self, secret: SecretContainer) -> SecretContainer:
         url = f"https://{self.url}/api/v1/vault/secret/{secret.name}/"
@@ -148,4 +148,4 @@ class Vault:
                 exc.response, "Failed to update secret"
             ) from exc
         except Exception as exc:
-            raise AutomizorError("Failed to update secret") from exc
+            raise AutomizorError(f"Failed to update secret: {exc}") from exc

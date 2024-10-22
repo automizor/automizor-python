@@ -89,7 +89,7 @@ class DataStore:
                 exc.response, "Failed to get datastore values"
             ) from exc
         except Exception as exc:
-            raise AutomizorError("Failed to get datastore values") from exc
+            raise AutomizorError(f"Failed to get datastore values: {exc}") from exc
 
     def _set_values(self, name: str, values: JSON) -> None:
         url = f"https://{self.url}/api/v1/workflow/datastore/{name}/values/"
@@ -101,4 +101,4 @@ class DataStore:
                 exc.response, "Failed to set datastore values"
             ) from exc
         except Exception as exc:
-            raise AutomizorError("Failed to set datastore values") from exc
+            raise AutomizorError(f"Failed to set datastore values: {exc}") from exc

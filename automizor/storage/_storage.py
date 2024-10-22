@@ -92,7 +92,7 @@ class Storage:
                 exc.response, "Failed to list assets"
             ) from exc
         except Exception as exc:
-            raise AutomizorError("Failed to list assets") from exc
+            raise AutomizorError(f"Failed to list assets: {exc}") from exc
         return asset_names
 
     def delete_asset(self, name: str):
@@ -116,7 +116,7 @@ class Storage:
                 exc.response, "Failed to delete asset"
             ) from exc
         except Exception as exc:
-            raise AutomizorError("Failed to delete asset") from exc
+            raise AutomizorError(f"Failed to delete asset: {exc}") from exc
 
     def get_bytes(self, name: str) -> bytes:
         """
@@ -238,7 +238,7 @@ class Storage:
                 exc.response, "Failed to create asset"
             ) from exc
         except Exception as exc:
-            raise AutomizorError("Failed to create asset") from exc
+            raise AutomizorError(f"Failed to create asset: {exc}") from exc
 
     def _download_file(self, name: str, mode: str = "content"):
         url = self._get_asset_url(name)
@@ -260,7 +260,7 @@ class Storage:
                 exc.response, "Failed to download asset"
             ) from exc
         except Exception as exc:
-            raise AutomizorError("Failed to download asset") from exc
+            raise AutomizorError(f"Failed to download asset: {exc}") from exc
 
     def _get_asset_url(self, name: str) -> str:
         url = f"https://{self.url}/api/v1/storage/asset/{name}/"
@@ -277,7 +277,7 @@ class Storage:
                 exc.response, "Failed to get asset URL"
             ) from exc
         except Exception as exc:
-            raise AutomizorError("Failed to get asset URL") from exc
+            raise AutomizorError(f"Failed to get asset URL: {exc}") from exc
 
     def _update_asset(self, name: str, content: bytes, content_type: str):
         """
@@ -307,4 +307,4 @@ class Storage:
                 exc.response, "Failed to update asset"
             ) from exc
         except Exception as exc:
-            raise AutomizorError("Failed to update asset") from exc
+            raise AutomizorError(f"Failed to update asset: {exc}") from exc
