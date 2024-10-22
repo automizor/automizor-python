@@ -48,17 +48,16 @@ class Job:
 
     _instance = None
 
-    @classmethod
-    def configure(cls, api_token: str | None = None):
-        cls._instance = cls(api_token)
-
     def __init__(self, api_token: str | None = None):
         self._context_file = os.getenv("AUTOMIZOR_CONTEXT_FILE", None)
         self._job_id = os.getenv("AUTOMIZOR_JOB_ID", None)
 
         self.url, self.token = get_api_config(api_token)
-        self.session = requests.Session()
-        self.session.headers.update(get_headers(self.token))
+        self.headers = get_headers(self.token)
+
+    @classmethod
+    def configure(cls, api_token: str | None = None):
+        cls._instance = cls(api_token)
 
     @classmethod
     def get_instance(cls):
@@ -129,7 +128,7 @@ class Job:
     def _read_job_context(self) -> dict:
         url = f"https://{self.url}/api/v1/rpa/job/{self._job_id}/"
         try:
-            response = self.session.get(url, timeout=10)
+            response = requests.get(url, headers=self.headers, timeout=10)
             response.raise_for_status()
             return response.json().get("context", {})
         except requests.HTTPError as exc:

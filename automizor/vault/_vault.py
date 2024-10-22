@@ -44,14 +44,13 @@ class Vault:
 
     _instance = None
 
+    def __init__(self, api_token: str | None = None):
+        self.url, self.token = get_api_config(api_token)
+        self.headers = get_headers(self.token)
+
     @classmethod
     def configure(cls, api_token: str | None = None):
         cls._instance = cls(api_token)
-
-    def __init__(self, api_token: str | None = None):
-        self.url, self.token = get_api_config(api_token)
-        self.session = requests.Session()
-        self.session.headers.update(get_headers(self.token))
 
     @classmethod
     def get_instance(cls):
@@ -114,7 +113,9 @@ class Vault:
     def _create_secret(self, secret: SecretContainer) -> SecretContainer:
         url = f"https://{self.url}/api/v1/vault/secret/"
         try:
-            response = self.session.post(url, timeout=10, json=asdict(secret))
+            response = requests.post(
+                url, headers=self.headers, timeout=10, json=asdict(secret)
+            )
             response.raise_for_status()
             return SecretContainer(**response.json())
         except requests.HTTPError as exc:
@@ -127,7 +128,7 @@ class Vault:
     def _get_secret(self, name: str) -> SecretContainer:
         url = f"https://{self.url}/api/v1/vault/secret/{name}/"
         try:
-            response = self.session.get(url, timeout=10)
+            response = requests.get(url, headers=self.headers, timeout=10)
             response.raise_for_status()
             return SecretContainer(**response.json())
         except requests.HTTPError as exc:
@@ -140,7 +141,9 @@ class Vault:
     def _update_secret(self, secret: SecretContainer) -> SecretContainer:
         url = f"https://{self.url}/api/v1/vault/secret/{secret.name}/"
         try:
-            response = self.session.put(url, timeout=10, json=asdict(secret))
+            response = requests.put(
+                url, headers=self.headers, timeout=10, json=asdict(secret)
+            )
             response.raise_for_status()
             return SecretContainer(**response.json())
         except requests.HTTPError as exc:

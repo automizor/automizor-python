@@ -10,26 +10,20 @@ class DataStore:
     to manage and manipulate data stored in various formats. It supports
     operations to retrieve and update data using a unified API.
 
-    The class initializes an HTTP session with the necessary headers for
+    The class initializes an HTTP request with the necessary headers for
     authentication, and provides methods to retrieve values, and set values in
     the store.
-
-    Attributes:
-        url (str): The base URL for the API endpoint.
-        token (str): The authentication token for API access.
-        session (requests.Session): The HTTP session used to make API requests.
     """
 
     _instance = None
 
+    def __init__(self, api_token: str | None = None):
+        self.url, self.token = get_api_config(api_token)
+        self.headers = get_headers(self.token)
+
     @classmethod
     def configure(cls, api_token: str | None = None):
         cls._instance = cls(api_token)
-
-    def __init__(self, api_token: str | None = None):
-        self.url, self.token = get_api_config(api_token)
-        self.session = requests.Session()
-        self.session.headers.update(get_headers(self.token))
 
     @classmethod
     def get_instance(cls):
@@ -81,7 +75,9 @@ class DataStore:
         )
         url = f"https://{self.url}/api/v1/workflow/datastore/{name}/values/"
         try:
-            response = self.session.get(url, timeout=10, params=params)
+            response = requests.get(
+                url, headers=self.headers, params=params, timeout=10
+            )
             response.raise_for_status()
             return response.json()
         except requests.HTTPError as exc:
@@ -94,7 +90,7 @@ class DataStore:
     def _set_values(self, name: str, values: JSON) -> None:
         url = f"https://{self.url}/api/v1/workflow/datastore/{name}/values/"
         try:
-            response = self.session.post(url, json=values, timeout=10)
+            response = requests.post(url, headers=self.headers, json=values, timeout=10)
             response.raise_for_status()
         except requests.HTTPError as exc:
             raise AutomizorError.from_response(

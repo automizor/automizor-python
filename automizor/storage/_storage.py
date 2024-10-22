@@ -50,14 +50,13 @@ class Storage:
 
     _instance = None
 
+    def __init__(self, api_token: str | None = None):
+        self.url, self.token = get_api_config(api_token)
+        self.headers = get_headers(self.token)
+
     @classmethod
     def configure(cls, api_token: str | None = None):
         cls._instance = cls(api_token)
-
-    def __init__(self, api_token: str | None = None):
-        self.url, self.token = get_api_config(api_token)
-        self.session = requests.Session()
-        self.session.headers.update(get_headers(self.token))
 
     @classmethod
     def get_instance(cls):
@@ -80,7 +79,7 @@ class Storage:
 
         try:
             while url:
-                response = self.session.get(url, timeout=10)
+                response = requests.get(url, headers=self.headers, timeout=10)
                 response.raise_for_status()
                 data = response.json()
 
@@ -109,7 +108,7 @@ class Storage:
 
         url = f"https://{self.url}/api/v1/storage/asset/{name}/"
         try:
-            response = self.session.delete(url, timeout=10)
+            response = requests.delete(url, headers=self.headers, timeout=10)
             response.raise_for_status()
         except requests.HTTPError as exc:
             raise AutomizorError.from_response(
@@ -231,7 +230,9 @@ class Storage:
                 "name": name,
             }
             files = {"file": ("text.txt", content, content_type)}
-            response = self.session.post(url, files=files, data=data, timeout=10)
+            response = requests.post(
+                url, headers=self.headers, files=files, data=data, timeout=10
+            )
             response.raise_for_status()
         except requests.HTTPError as exc:
             raise AutomizorError.from_response(
@@ -265,7 +266,7 @@ class Storage:
     def _get_asset_url(self, name: str) -> str:
         url = f"https://{self.url}/api/v1/storage/asset/{name}/"
         try:
-            response = self.session.get(url, timeout=10)
+            response = requests.get(url, headers=self.headers, timeout=10)
             response.raise_for_status()
 
             url = response.json().get("file")
@@ -300,7 +301,9 @@ class Storage:
                 "name": name,
             }
             files = {"file": ("text.txt", content, content_type)}
-            response = self.session.put(url, files=files, data=data, timeout=10)
+            response = requests.put(
+                url, headers=self.headers, files=files, data=data, timeout=10
+            )
             response.raise_for_status()
         except requests.HTTPError as exc:
             raise AutomizorError.from_response(
