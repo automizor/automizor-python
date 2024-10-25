@@ -1,7 +1,7 @@
 import json
 import mimetypes
 from pathlib import Path
-from typing import List
+from typing import List, Optional
 
 from automizor.utils import JSON
 
@@ -114,7 +114,7 @@ def set_bytes(name: str, data: bytes, content_type="application/octet-stream"):
     storage.set_bytes(name, data, content_type)
 
 
-def set_file(name: str, path: str, content_type: str = None):
+def set_file(name: str, path: str, content_type: Optional[str] = None):
     """
     Uploads a file as an asset.
 

@@ -1,3 +1,5 @@
+from typing import Optional
+
 import requests
 
 from automizor.exceptions import AutomizorError
@@ -17,12 +19,12 @@ class DataStore:
 
     _instance = None
 
-    def __init__(self, api_token: str | None = None):
+    def __init__(self, api_token: Optional[str] = None):
         self.url, self.token = get_api_config(api_token)
         self.headers = get_headers(self.token)
 
     @classmethod
-    def configure(cls, api_token: str | None = None):
+    def configure(cls, api_token: Optional[str] = None):
         cls._instance = cls(api_token)
 
     @classmethod
@@ -34,8 +36,8 @@ class DataStore:
     def get_values(
         self,
         name: str,
-        primary_key: str | None = None,
-        secondary_key: str | None = None,
+        primary_key: Optional[str] = None,
+        secondary_key: Optional[str] = None,
     ) -> JSON:
         """
         Retrieves values from the specified data store.
@@ -65,8 +67,8 @@ class DataStore:
     def _get_values(
         self,
         name: str,
-        primary_key: str | None = None,
-        secondary_key: str | None = None,
+        primary_key: Optional[str] = None,
+        secondary_key: Optional[str] = None,
     ) -> JSON:
         params = (
             {"primary_key": primary_key, "secondary_key": secondary_key}

@@ -1,5 +1,6 @@
 import json
 import os
+from typing import Optional
 
 import requests
 
@@ -48,7 +49,7 @@ class Job:
 
     _instance = None
 
-    def __init__(self, api_token: str | None = None):
+    def __init__(self, api_token: Optional[str] = None):
         self._context_file = os.getenv("AUTOMIZOR_CONTEXT_FILE", None)
         self._job_id = os.getenv("AUTOMIZOR_JOB_ID", None)
 
@@ -56,7 +57,7 @@ class Job:
         self.headers = get_headers(self.token)
 
     @classmethod
-    def configure(cls, api_token: str | None = None):
+    def configure(cls, api_token: Optional[str] = None):
         cls._instance = cls(api_token)
 
     @classmethod

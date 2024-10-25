@@ -1,6 +1,6 @@
 import os
 import platform
-from typing import Dict, List, Union
+from typing import Dict, List, Optional, Union
 
 from automizor import version
 from automizor.exceptions import AutomizorError
@@ -13,7 +13,7 @@ OS_SYSTEM, OS_RELEASE, _ = platform.system_alias(
 )
 
 
-def get_api_config(api_token: str | None = None) -> tuple[str, str]:
+def get_api_config(api_token: Optional[str] = None) -> tuple[str, str]:
     if api_token is None:
         api_token = os.getenv("AUTOMIZOR_AGENT_TOKEN")
 

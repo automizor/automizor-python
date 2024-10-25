@@ -1,4 +1,5 @@
 from dataclasses import asdict
+from typing import Optional
 
 import requests
 
@@ -44,12 +45,12 @@ class Vault:
 
     _instance = None
 
-    def __init__(self, api_token: str | None = None):
+    def __init__(self, api_token: Optional[str] = None):
         self.url, self.token = get_api_config(api_token)
         self.headers = get_headers(self.token)
 
     @classmethod
-    def configure(cls, api_token: str | None = None):
+    def configure(cls, api_token: Optional[str] = None):
         cls._instance = cls(api_token)
 
     @classmethod
