@@ -33,19 +33,19 @@ class Storage:
         asset_names = storage.list_assets()
 
         # To delete an asset
-        storage.delete_asset("AssetName")
+        storage.delete_asset("asset_name")
 
         # Save an asset
-        storage.set_bytes("AssetName", b"Hello, World!")
-        storage.set_file("AssetName", "/path/to/file")
-        storage.set_json("AssetName", {"key": "value"})
-        storage.set_text("AssetName", "Hello, World!")
+        storage.set_bytes("asset_name", b"Hello, World!")
+        storage.set_file("asset_name", "/path/to/file")
+        storage.set_json("asset_name", {"key": "value"})
+        storage.set_text("asset_name", "Hello, World!")
 
         # Get an asset
-        bytes_data = storage.get_bytes("AssetName")
-        file_path = storage.get_file("AssetName", "/path/to/save/file")
-        json_data = storage.get_json("AssetName")
-        text_data = storage.get_text("AssetName")
+        bytes_data = storage.get_bytes("asset_name")
+        file_path = storage.get_file("asset_name", "/path/to/save/file")
+        json_data = storage.get_json("asset_name")
+        text_data = storage.get_text("asset_name")
     """
 
     _instance = None

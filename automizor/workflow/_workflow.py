@@ -26,9 +26,9 @@ class Workflow:
         from automizor import workflow
 
         # Start a workflow instance by name
-        workflow.start_by_name("ModelName", "WorkspaceName")
-        workflow.start_by_name("ModelName", "WorkspaceName", "BusinessKey")
-        workflow.start_by_name("ModelName", "WorkspaceName", "BusinessKey", {"initial": "data"})
+        workflow.start_by_name("model_name", "workspace_name")
+        workflow.start_by_name("model_name", "workspace_name", "BusinessKey")
+        workflow.start_by_name("model_name", "workspace_name", "BusinessKey", {"initial": "data"})
     """
 
     _instance = None

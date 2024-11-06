@@ -28,7 +28,7 @@ def start_by_name(
         business_key: An optional business identifier.
         data: Optional initial instance data.
     """
-    payload = json.dumps(data).encode("utf-8")
+    payload = json.dumps(data or {}).encode("utf-8")
 
     workflow = Workflow.get_instance()
     workflow.start_by_name(process_model, workspace, business_key, payload)

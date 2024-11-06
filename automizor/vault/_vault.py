@@ -30,15 +30,15 @@ class Vault:
         from automizor import vault
 
         # Create a new secret
-        vault.create_secret(name="MySecret", value={"username": "admin", "password": "*****"})
+        vault.create_secret("my_secret", {"username": "admin", "password": "*****"})
 
         # Retrieve a secret by its name
-        secret = vault.get_secret("MySecret")
+        secret = vault.get_secret("my_secret")
         print(secret.get("username"))  # Output: "admin"
         print(secret.get("password"))  # Output: "*****"
 
         # Update a existing secret
-        secret = vault.get_secret("MySecret")
+        secret = vault.get_secret("my_secret")
         secret.update({"username": "user"})
         vault.set_secret(secret)
     """

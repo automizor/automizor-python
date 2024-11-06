@@ -25,8 +25,8 @@ class Action:
         from automizor import action
 
         # Run an action by name
-        action.run("action_name", "WorkspaceName")
-        action.run("action_name", "WorkspaceName", {"name": "John Doe"})
+        action.run("action_name", "workspace_name")
+        action.run("action_name", "workspace_name", {"name": "John Doe"})
     """
 
     _instance = None
