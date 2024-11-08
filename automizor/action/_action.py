@@ -80,7 +80,7 @@ class Action:
         """
         url = f"https://{self.url}/api/v2/action/{name}/execute?workspace={workspace}"
         try:
-            response = requests.put(url, headers=self.headers, data=payload, timeout=10)
+            response = requests.put(url, headers=self.headers, data=payload, timeout=60)
             response.raise_for_status()
             return response.json()
         except requests.HTTPError as exc:
