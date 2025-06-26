@@ -1,7 +1,6 @@
 from typing import List, Optional
 
-import requests
-
+from automizor import session
 from automizor.exceptions import AutomizorError, NotFound
 from automizor.utils import JSON, get_api_config, get_headers
 
@@ -77,21 +76,15 @@ class Storage:
         url = f"https://{self.url}/api/v1/storage/asset/"
         asset_names = []
 
-        try:
-            while url:
-                response = requests.get(url, headers=self.headers, timeout=10)
-                response.raise_for_status()
-                data = response.json()
+        while url:
+            response = session.get(url, headers=self.headers, timeout=10)
+            if response.status_code >= 400:
+                raise AutomizorError.from_response(response, "Failed to list assets")
+            data = response.json()
 
-                for asset in data["results"]:
-                    asset_names.append(asset["name"])
-                url = data["next"]
-        except requests.HTTPError as exc:
-            raise AutomizorError.from_response(
-                exc.response, "Failed to list assets"
-            ) from exc
-        except Exception as exc:
-            raise AutomizorError(f"Failed to list assets: {exc}") from exc
+            for asset in data["results"]:
+                asset_names.append(asset["name"])
+            url = data["next"]
         return asset_names
 
     def delete_asset(self, name: str):
@@ -107,15 +100,9 @@ class Storage:
         """
 
         url = f"https://{self.url}/api/v1/storage/asset/{name}/"
-        try:
-            response = requests.delete(url, headers=self.headers, timeout=10)
-            response.raise_for_status()
-        except requests.HTTPError as exc:
-            raise AutomizorError.from_response(
-                exc.response, "Failed to delete asset"
-            ) from exc
-        except Exception as exc:
-            raise AutomizorError(f"Failed to delete asset: {exc}") from exc
+        response = session.delete(url, headers=self.headers, timeout=10)
+        if response.status_code >= 400:
+            raise AutomizorError.from_response(response, "Failed to delete asset")
 
     def get_bytes(self, name: str) -> bytes:
         """
@@ -224,61 +211,39 @@ class Storage:
         """
 
         url = f"https://{self.url}/api/v1/storage/asset/"
-        try:
-            data = {
-                "content_type": content_type,
-                "name": name,
-            }
-            files = {"file": ("text.txt", content, content_type)}
-            response = requests.post(
-                url, headers=self.headers, files=files, data=data, timeout=10
-            )
-            response.raise_for_status()
-        except requests.HTTPError as exc:
-            raise AutomizorError.from_response(
-                exc.response, "Failed to create asset"
-            ) from exc
-        except Exception as exc:
-            raise AutomizorError(f"Failed to create asset: {exc}") from exc
+        data = {"content_type": content_type, "name": name}
+        files = {"file": ("text.txt", content, content_type)}
+        response = session.post(
+            url, headers=self.headers, files=files, data=data, timeout=10
+        )
+        if response.status_code >= 400:
+            raise AutomizorError.from_response(response, "Failed to create asset")
 
     def _download_file(self, name: str, mode: str = "content"):
         url = self._get_asset_url(name)
+        response = session.get(url=url, timeout=10)
+        if response.status_code >= 400:
+            raise AutomizorError.from_response(response, "Failed to download asset")
 
-        try:
-            response = requests.get(url=url, timeout=10)
-            response.raise_for_status()
-
-            match mode:
-                case "content":
-                    return response.content
-                case "json":
-                    return response.json()
-                case "text":
-                    return response.text
-            raise RuntimeError(f"Invalid mode {mode}")
-        except requests.HTTPError as exc:
-            raise AutomizorError.from_response(
-                exc.response, "Failed to download asset"
-            ) from exc
-        except Exception as exc:
-            raise AutomizorError(f"Failed to download asset: {exc}") from exc
+        match mode:
+            case "content":
+                return response.content
+            case "json":
+                return response.json()
+            case "text":
+                return response.text
+        raise RuntimeError(f"Invalid mode {mode}")
 
     def _get_asset_url(self, name: str) -> str:
         url = f"https://{self.url}/api/v1/storage/asset/{name}/"
-        try:
-            response = requests.get(url, headers=self.headers, timeout=10)
-            response.raise_for_status()
+        response = session.get(url, headers=self.headers, timeout=10)
+        if response.status_code >= 400:
+            raise AutomizorError.from_response(response, "Failed to get asset URL")
 
-            url = response.json().get("file")
-            if url:
-                return url
-            raise RuntimeError("Url not found")
-        except requests.HTTPError as exc:
-            raise AutomizorError.from_response(
-                exc.response, "Failed to get asset URL"
-            ) from exc
-        except Exception as exc:
-            raise AutomizorError(f"Failed to get asset URL: {exc}") from exc
+        url = response.json().get("file")
+        if url:
+            return url
+        raise RuntimeError("Url not found")
 
     def _update_asset(self, name: str, content: bytes, content_type: str):
         """
@@ -295,19 +260,10 @@ class Storage:
         """
 
         url = f"https://{self.url}/api/v1/storage/asset/{name}/"
-        try:
-            data = {
-                "content_type": content_type,
-                "name": name,
-            }
-            files = {"file": ("text.txt", content, content_type)}
-            response = requests.put(
-                url, headers=self.headers, files=files, data=data, timeout=10
-            )
-            response.raise_for_status()
-        except requests.HTTPError as exc:
-            raise AutomizorError.from_response(
-                exc.response, "Failed to update asset"
-            ) from exc
-        except Exception as exc:
-            raise AutomizorError(f"Failed to update asset: {exc}") from exc
+        data = {"content_type": content_type, "name": name}
+        files = {"file": ("text.txt", content, content_type)}
+        response = session.put(
+            url, headers=self.headers, files=files, data=data, timeout=10
+        )
+        if response.status_code >= 400:
+            raise AutomizorError.from_response(response, "Failed to update asset")

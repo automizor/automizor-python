@@ -1,7 +1,6 @@
 from typing import Optional
 
-import requests
-
+from automizor import session
 from automizor.exceptions import AutomizorError
 from automizor.utils import JSON, get_api_config, get_headers
 
@@ -76,27 +75,18 @@ class DataStore:
             else {}
         )
         url = f"https://{self.url}/api/v1/workflow/datastore/{name}/values/"
-        try:
-            response = requests.get(
-                url, headers=self.headers, params=params, timeout=10
-            )
-            response.raise_for_status()
-            return response.json()
-        except requests.HTTPError as exc:
+        response = session.get(url, headers=self.headers, params=params, timeout=10)
+        if response.status_code >= 400:
             raise AutomizorError.from_response(
-                exc.response, "Failed to get datastore values"
-            ) from exc
-        except Exception as exc:
-            raise AutomizorError(f"Failed to get datastore values: {exc}") from exc
+                response, "Failed to get datastore values"
+            )
+
+        return response.json()
 
     def _set_values(self, name: str, values: JSON) -> None:
         url = f"https://{self.url}/api/v1/workflow/datastore/{name}/values/"
-        try:
-            response = requests.post(url, headers=self.headers, json=values, timeout=10)
-            response.raise_for_status()
-        except requests.HTTPError as exc:
+        response = session.post(url, headers=self.headers, json=values, timeout=10)
+        if response.status_code >= 400:
             raise AutomizorError.from_response(
-                exc.response, "Failed to set datastore values"
-            ) from exc
-        except Exception as exc:
-            raise AutomizorError(f"Failed to set datastore values: {exc}") from exc
+                response, "Failed to set datastore values"
+            )

@@ -1,7 +1,6 @@
 from typing import Optional
 
-import requests
-
+from automizor import session
 from automizor.exceptions import AutomizorError
 from automizor.utils import JSON, get_api_config, get_headers
 
@@ -79,13 +78,7 @@ class Action:
             AutomizorError: If there is an error executing the action.
         """
         url = f"https://{self.url}/api/v2/action/{name}/execute?workspace={workspace}"
-        try:
-            response = requests.put(url, headers=self.headers, data=payload, timeout=90)
-            response.raise_for_status()
-            return response.json()
-        except requests.HTTPError as exc:
-            raise AutomizorError.from_response(
-                exc.response, "Failed to execute action"
-            ) from exc
-        except Exception as exc:
-            raise AutomizorError(f"Failed to execute action: {exc}") from exc
+        response = session.put(url, headers=self.headers, data=payload, timeout=90)
+        if response.status_code >= 400:
+            raise AutomizorError.from_response(response, "Failed to execute action")
+        return response.json()

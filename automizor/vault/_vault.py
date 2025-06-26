@@ -1,8 +1,7 @@
 from dataclasses import asdict
 from typing import Optional
 
-import requests
-
+from automizor import session
 from automizor.exceptions import AutomizorError, NotFound
 from automizor.utils import get_api_config, get_headers
 
@@ -113,43 +112,25 @@ class Vault:
 
     def _create_secret(self, secret: SecretContainer) -> SecretContainer:
         url = f"https://{self.url}/api/v1/vault/secret/"
-        try:
-            response = requests.post(
-                url, headers=self.headers, timeout=10, json=asdict(secret)
-            )
-            response.raise_for_status()
-            return SecretContainer(**response.json())
-        except requests.HTTPError as exc:
-            raise AutomizorError.from_response(
-                exc.response, "Failed to create secret"
-            ) from exc
-        except Exception as exc:
-            raise AutomizorError(f"Failed to create secret: {exc}") from exc
+        response = session.post(
+            url, headers=self.headers, timeout=10, json=asdict(secret)
+        )
+        if response.status_code >= 400:
+            raise AutomizorError.from_response(response, "Failed to create secret")
+        return SecretContainer(**response.json())
 
     def _get_secret(self, name: str) -> SecretContainer:
         url = f"https://{self.url}/api/v1/vault/secret/{name}/"
-        try:
-            response = requests.get(url, headers=self.headers, timeout=10)
-            response.raise_for_status()
-            return SecretContainer(**response.json())
-        except requests.HTTPError as exc:
-            raise AutomizorError.from_response(
-                exc.response, "Failed to get secret"
-            ) from exc
-        except Exception as exc:
-            raise AutomizorError(f"Failed to get secret: {exc}") from exc
+        response = session.get(url, headers=self.headers, timeout=10)
+        if response.status_code >= 400:
+            raise AutomizorError.from_response(response, "Failed to get secret")
+        return SecretContainer(**response.json())
 
     def _update_secret(self, secret: SecretContainer) -> SecretContainer:
         url = f"https://{self.url}/api/v1/vault/secret/{secret.name}/"
-        try:
-            response = requests.put(
-                url, headers=self.headers, timeout=10, json=asdict(secret)
-            )
-            response.raise_for_status()
-            return SecretContainer(**response.json())
-        except requests.HTTPError as exc:
-            raise AutomizorError.from_response(
-                exc.response, "Failed to update secret"
-            ) from exc
-        except Exception as exc:
-            raise AutomizorError(f"Failed to update secret: {exc}") from exc
+        response = session.put(
+            url, headers=self.headers, timeout=10, json=asdict(secret)
+        )
+        if response.status_code >= 400:
+            raise AutomizorError.from_response(response, "Failed to update secret")
+        return SecretContainer(**response.json())

@@ -2,8 +2,7 @@ import json
 import os
 from typing import Optional
 
-import requests
-
+from automizor import session
 from automizor.exceptions import AutomizorError
 from automizor.utils import JSON, get_api_config, get_headers
 
@@ -128,13 +127,7 @@ class Job:
 
     def _read_job_context(self) -> dict:
         url = f"https://{self.url}/api/v1/rpa/job/{self._job_id}/"
-        try:
-            response = requests.get(url, headers=self.headers, timeout=10)
-            response.raise_for_status()
-            return response.json().get("context", {})
-        except requests.HTTPError as exc:
-            raise AutomizorError.from_response(
-                exc.response, "Failed to get job context"
-            ) from exc
-        except Exception as exc:
-            raise AutomizorError(f"Failed to get job context: {exc}") from exc
+        response = session.get(url, headers=self.headers, timeout=10)
+        if response.status_code >= 400:
+            raise AutomizorError.from_response(response, "Failed to get job context")
+        return response.json().get("context", {})

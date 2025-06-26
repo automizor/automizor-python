@@ -1,7 +1,6 @@
 from typing import Optional
 
-import requests
-
+from automizor import session
 from automizor.exceptions import AutomizorError
 from automizor.utils import get_api_config, get_headers
 
@@ -85,18 +84,13 @@ class Workflow:
             AutomizorError: If there is an error in creating the instance.
         """
         url = f"https://{self.url}/api/v1/workflow/instance/"
-        try:
-            data = {
-                "business_key": business_key,
-                "initial_data": payload,
-                "process_model": process_model,
-                "workspace": workspace,
-            }
-            response = requests.post(url, headers=self.headers, data=data, timeout=10)
-            response.raise_for_status()
-        except requests.HTTPError as exc:
-            raise AutomizorError.from_response(
-                exc.response, "Failed to create instance"
-            ) from exc
-        except Exception as exc:
-            raise AutomizorError(f"Failed to create instance: {exc}") from exc
+
+        data = {
+            "business_key": business_key,
+            "initial_data": payload,
+            "process_model": process_model,
+            "workspace": workspace,
+        }
+        response = session.post(url, headers=self.headers, data=data, timeout=10)
+        if response.status_code >= 400:
+            raise AutomizorError.from_response(response, "Failed to create instance")
