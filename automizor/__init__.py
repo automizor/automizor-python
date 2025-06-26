@@ -15,4 +15,4 @@ session = requests.Session()
 session.mount("https://", adapter)
 session.mount("http://", adapter)
 
-version = "0.4.16"
+version = "0.4.17"
