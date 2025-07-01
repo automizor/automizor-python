@@ -91,6 +91,6 @@ class Workflow:
             "process_model": process_model,
             "workspace": workspace,
         }
-        response = session.post(url, headers=self.headers, data=data, timeout=10)
+        response = session.post(url, headers=self.headers, data=data, timeout=60)
         if response.status_code >= 400:
             raise AutomizorError.from_response(response, "Failed to create instance")

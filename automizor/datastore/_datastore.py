@@ -75,7 +75,7 @@ class DataStore:
             else {}
         )
         url = f"https://{self.url}/api/v1/workflow/datastore/{name}/values/"
-        response = session.get(url, headers=self.headers, params=params, timeout=10)
+        response = session.get(url, headers=self.headers, params=params, timeout=60)
         if response.status_code >= 400:
             raise AutomizorError.from_response(
                 response, "Failed to get datastore values"
@@ -85,7 +85,7 @@ class DataStore:
 
     def _set_values(self, name: str, values: JSON) -> None:
         url = f"https://{self.url}/api/v1/workflow/datastore/{name}/values/"
-        response = session.post(url, headers=self.headers, json=values, timeout=10)
+        response = session.post(url, headers=self.headers, json=values, timeout=60)
         if response.status_code >= 400:
             raise AutomizorError.from_response(
                 response, "Failed to set datastore values"

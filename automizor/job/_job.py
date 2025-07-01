@@ -127,7 +127,7 @@ class Job:
 
     def _read_job_context(self) -> dict:
         url = f"https://{self.url}/api/v1/rpa/job/{self._job_id}/"
-        response = session.get(url, headers=self.headers, timeout=10)
+        response = session.get(url, headers=self.headers, timeout=60)
         if response.status_code >= 400:
             raise AutomizorError.from_response(response, "Failed to get job context")
         return response.json().get("context", {})

@@ -113,7 +113,7 @@ class Vault:
     def _create_secret(self, secret: SecretContainer) -> SecretContainer:
         url = f"https://{self.url}/api/v1/vault/secret/"
         response = session.post(
-            url, headers=self.headers, timeout=10, json=asdict(secret)
+            url, headers=self.headers, timeout=60, json=asdict(secret)
         )
         if response.status_code >= 400:
             raise AutomizorError.from_response(response, "Failed to create secret")
@@ -121,7 +121,7 @@ class Vault:
 
     def _get_secret(self, name: str) -> SecretContainer:
         url = f"https://{self.url}/api/v1/vault/secret/{name}/"
-        response = session.get(url, headers=self.headers, timeout=10)
+        response = session.get(url, headers=self.headers, timeout=60)
         if response.status_code >= 400:
             raise AutomizorError.from_response(response, "Failed to get secret")
         return SecretContainer(**response.json())
@@ -129,7 +129,7 @@ class Vault:
     def _update_secret(self, secret: SecretContainer) -> SecretContainer:
         url = f"https://{self.url}/api/v1/vault/secret/{secret.name}/"
         response = session.put(
-            url, headers=self.headers, timeout=10, json=asdict(secret)
+            url, headers=self.headers, timeout=60, json=asdict(secret)
         )
         if response.status_code >= 400:
             raise AutomizorError.from_response(response, "Failed to update secret")

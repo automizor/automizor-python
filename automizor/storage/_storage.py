@@ -77,7 +77,7 @@ class Storage:
         asset_names = []
 
         while url:
-            response = session.get(url, headers=self.headers, timeout=10)
+            response = session.get(url, headers=self.headers, timeout=60)
             if response.status_code >= 400:
                 raise AutomizorError.from_response(response, "Failed to list assets")
             data = response.json()
@@ -100,7 +100,7 @@ class Storage:
         """
 
         url = f"https://{self.url}/api/v1/storage/asset/{name}/"
-        response = session.delete(url, headers=self.headers, timeout=10)
+        response = session.delete(url, headers=self.headers, timeout=60)
         if response.status_code >= 400:
             raise AutomizorError.from_response(response, "Failed to delete asset")
 
@@ -214,14 +214,14 @@ class Storage:
         data = {"content_type": content_type, "name": name}
         files = {"file": ("text.txt", content, content_type)}
         response = session.post(
-            url, headers=self.headers, files=files, data=data, timeout=10
+            url, headers=self.headers, files=files, data=data, timeout=60
         )
         if response.status_code >= 400:
             raise AutomizorError.from_response(response, "Failed to create asset")
 
     def _download_file(self, name: str, mode: str = "content"):
         url = self._get_asset_url(name)
-        response = session.get(url=url, timeout=10)
+        response = session.get(url=url, timeout=60)
         if response.status_code >= 400:
             raise AutomizorError.from_response(response, "Failed to download asset")
 
@@ -236,7 +236,7 @@ class Storage:
 
     def _get_asset_url(self, name: str) -> str:
         url = f"https://{self.url}/api/v1/storage/asset/{name}/"
-        response = session.get(url, headers=self.headers, timeout=10)
+        response = session.get(url, headers=self.headers, timeout=60)
         if response.status_code >= 400:
             raise AutomizorError.from_response(response, "Failed to get asset URL")
 
@@ -263,7 +263,7 @@ class Storage:
         data = {"content_type": content_type, "name": name}
         files = {"file": ("text.txt", content, content_type)}
         response = session.put(
-            url, headers=self.headers, files=files, data=data, timeout=10
+            url, headers=self.headers, files=files, data=data, timeout=60
         )
         if response.status_code >= 400:
             raise AutomizorError.from_response(response, "Failed to update asset")
